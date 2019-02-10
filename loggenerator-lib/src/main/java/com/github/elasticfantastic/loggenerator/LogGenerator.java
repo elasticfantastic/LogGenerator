@@ -1,7 +1,5 @@
 package com.github.elasticfantastic.loggenerator;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +32,7 @@ public class LogGenerator {
         this.beginningDate = specificDate;
         this.endingDate = specificDate;
 
-        this.formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:MM:ss.SSS'Z'");
+        this.formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         // FIX
         messagesMapping.put("ERROR", new String[] { "error1", "error2", "error3" });
@@ -57,17 +55,26 @@ public class LogGenerator {
         this.endingDate = endingDate;
     }
 
-    public String getLogRow() {
+    public String getLog() {
+        return getLog(new HashMap<String, Object>());
+    }
+
+    public String getLog(Map<String, Object> inputs) {
         StringBuilder builder = new StringBuilder();
 
-        String id = getRandom(this.ids);
-        String level = getRandom(this.levels);
+        //String id = getRandom(this.ids);
+        Object id = inputs.getOrDefault("id", getRandom(this.ids));
+        
+        //String level = getRandom(this.levels);
+        Object level = inputs.getOrDefault("level", getRandom(this.levels));
+        
         LocalDateTime date = getRandom(this.beginningDate, this.endingDate);
-
+        
         String[] messages = this.messagesMapping.get(level);
-        String msg = getRandom(messages);
+        //String message = getRandom(messages);
+        Object message = inputs.getOrDefault("message", getRandom(messages));
 
-        builder.append(String.format("[%s] [%s] [%s] - %s", id, level, date.format(this.formatter), msg));
+        builder.append(String.format("[%s] [%s] [%s] - %s", id, level, date.format(this.formatter), message));
         return builder.toString();
     }
 

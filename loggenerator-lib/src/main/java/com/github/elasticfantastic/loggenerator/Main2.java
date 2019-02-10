@@ -14,7 +14,7 @@ public class Main2 {
         LogGenerator generator = new LogGenerator(beginningDate, beginningDate);
         
         for (int i = 0; i < 7; i++) {
-            System.out.println(generator.getLogRow());
+            System.out.println(generator.getLog());
         }
         
     }
