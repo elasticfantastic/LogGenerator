@@ -5,10 +5,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
-
-import javax.naming.OperationNotSupportedException;
+import java.util.Set;
 
 public class LogGenerator {
 
@@ -72,6 +73,14 @@ public class LogGenerator {
     	}
     }
     
+    public Map<String, Double> getIdFrequencies() {
+    	Set<String> ids = new HashSet<>();
+    	for (String id : idFrequencies) {
+    		ids.add(id);
+    	}
+    	return getFrequencyMappings(ids, idFrequencies);
+    }
+    
     public void setLevelFrequency(String level, double frequency) {
     	int maxFrequency = (int) Math.rint(frequency * levelFrequencies.length);
     	int firstEmptyPos = getFirstEmptyPosition(levelFrequencies);
@@ -80,8 +89,30 @@ public class LogGenerator {
     	}
     }
     
-    public String[] getFrequencies() {
-    	return levelFrequencies;
+    public Map<String, Double> getLevelFrequencies() {
+    	Set<String> levels = new HashSet<>();
+    	for (String level : levelFrequencies) {
+    		levels.add(level);
+    	}
+    	return getFrequencyMappings(levels, levelFrequencies);
+    }
+    
+    private Map<String, Double> getFrequencyMappings(Set<String> keys, String[] frequencies) {
+    	Map<String, Double> mappings = new HashMap<>();
+    	for (String key : keys) {
+    		for (int i = 0; i < frequencies.length; i++) {
+    			String frequency = frequencies[i];
+    			if (Objects.equals(key, frequency)) {
+        			if (!mappings.containsKey(key)) {
+        				mappings.put(key, 1.0);
+        			} else {
+        				mappings.put(key, mappings.get(key) + 1.0);
+        			}
+    			}
+    		}
+    		mappings.put(key, mappings.get(key) / frequencies.length);
+    	}
+    	return mappings;
     }
     
     private int getFirstEmptyPosition(Object[] arr) {

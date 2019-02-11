@@ -10,7 +10,7 @@ import java.util.Map;
 public class Main2 {
 
     public static void main(String[] args) throws IOException {
-        LocalDateTime endingDate2 = LocalDateTime.of(2018, 01, 01, 23, 59, 59);
+        //LocalDateTime endingDate2 = LocalDateTime.of(2018, 01, 01, 23, 59, 59);
         
         int iterations = 200000;
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("log.txt", true))) {
