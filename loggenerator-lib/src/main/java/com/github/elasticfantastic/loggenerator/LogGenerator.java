@@ -8,17 +8,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.naming.OperationNotSupportedException;
+
 public class LogGenerator {
 
     // FIX
-    private String[] ids = { "Client", "Server", "Middleware" };
-    private String[] levels = { "ERROR", "INFO", "WARN" };
+    //private String[] ids = { "Client", "Server", "Middleware" };
+    //private String[] levels = { "ERROR", "INFO", "WARN", "DEBUG" };
 
     // FIX
     private Map<String, String[]> messagesMapping = new HashMap<>();
-
+    
     private LocalDateTime beginningDate;
     private LocalDateTime endingDate;
+    
+    private String[] idFrequencies;
+    private String[] levelFrequencies;
 
     private DateTimeFormatter formatter;
 
@@ -32,12 +37,16 @@ public class LogGenerator {
         this.beginningDate = specificDate;
         this.endingDate = specificDate;
 
+        this.idFrequencies = new String[100];
+        this.levelFrequencies = new String[100];
+        
         this.formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         // FIX
         messagesMapping.put("ERROR", new String[] { "error1", "error2", "error3" });
         messagesMapping.put("INFO", new String[] { "info1", "info2", "info3" });
         messagesMapping.put("WARN", new String[] { "warn1", "warn2", "warn3" });
+        messagesMapping.put("DEBUG", new String[] { "debug1", "debug2", "debug3" });
     }
 
     /**
@@ -54,6 +63,36 @@ public class LogGenerator {
         this.beginningDate = beginningDate;
         this.endingDate = endingDate;
     }
+    
+    public void setIdFrequency(String id, double frequency) {
+    	int maxFrequency = (int) Math.rint(frequency * idFrequencies.length);
+    	int firstEmptyPos = getFirstEmptyPosition(idFrequencies);
+    	for (int i = firstEmptyPos; i < firstEmptyPos + maxFrequency; i++) {
+    		idFrequencies[i] = id;
+    	}
+    }
+    
+    public void setLevelFrequency(String level, double frequency) {
+    	int maxFrequency = (int) Math.rint(frequency * levelFrequencies.length);
+    	int firstEmptyPos = getFirstEmptyPosition(levelFrequencies);
+    	for (int i = firstEmptyPos; i < firstEmptyPos + maxFrequency; i++) {
+    		levelFrequencies[i] = level;
+    	}
+    }
+    
+    public String[] getFrequencies() {
+    	return levelFrequencies;
+    }
+    
+    private int getFirstEmptyPosition(Object[] arr) {
+    	for (int i = 0; i < arr.length; i++) {
+    		Object obj = arr[i];
+    		if (obj == null) {
+    			return i;
+    		}
+    	}
+    	throw new IllegalArgumentException("Array doesn't contain empty indices");
+    }
 
     public String getLog() {
         return getLog(new HashMap<String, Object>());
@@ -63,10 +102,10 @@ public class LogGenerator {
         StringBuilder builder = new StringBuilder();
 
         //String id = getRandom(this.ids);
-        Object id = inputs.getOrDefault("id", getRandom(this.ids));
+        Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
         
         //String level = getRandom(this.levels);
-        Object level = inputs.getOrDefault("level", getRandom(this.levels));
+        Object level = inputs.getOrDefault("level", getRandom(this.levelFrequencies));
         
         LocalDateTime date = getRandom(this.beginningDate, this.endingDate);
         
