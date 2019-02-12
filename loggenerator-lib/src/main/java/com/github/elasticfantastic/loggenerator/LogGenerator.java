@@ -26,8 +26,6 @@ public class LogGenerator {
     private String[] idFrequencies;
     private String[] levelFrequencies;
 
-    private DateTimeFormatter formatter;
-
     /**
      * <p>Create a <code>LogGenerator</code> which generates logs for the specified date.
      * 
@@ -40,8 +38,6 @@ public class LogGenerator {
 
         this.idFrequencies = new String[100];
         this.levelFrequencies = new String[100];
-        
-        this.formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         // FIX
         messagesMapping.put("ERROR", new String[] { "error1", "error2", "error3" });
@@ -125,27 +121,19 @@ public class LogGenerator {
     	throw new IllegalArgumentException("Array doesn't contain empty indices");
     }
 
-    public String getLog() {
+    public LogRow getLog() {
         return getLog(new HashMap<String, Object>());
     }
 
-    public String getLog(Map<String, Object> inputs) {
-        StringBuilder builder = new StringBuilder();
-
-        //String id = getRandom(this.ids);
+    public LogRow getLog(Map<String, Object> inputs) {
         Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
-        
-        //String level = getRandom(this.levels);
         Object level = inputs.getOrDefault("level", getRandom(this.levelFrequencies));
-        
         LocalDateTime date = getRandom(this.beginningDate, this.endingDate);
         
         String[] messages = this.messagesMapping.get(level);
-        //String message = getRandom(messages);
         Object message = inputs.getOrDefault("message", getRandom(messages));
 
-        builder.append(String.format("[%s] [%s] [%s] - %s", id, level, date.format(this.formatter), message));
-        return builder.toString();
+        return new LogRow(id.toString(), level.toString(), date, message.toString());
     }
 
     private static String getRandom(String[] arr) {
