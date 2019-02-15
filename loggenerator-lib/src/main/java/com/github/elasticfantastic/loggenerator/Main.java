@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        LogGenerator generator = new LogGenerator(LocalDateTime.now());
+        LogGenerator generator = new LogGenerator();
         
         generator.setIdFrequency("Client", 0.10);
         generator.setIdFrequency("Server", 0.60);
@@ -19,6 +19,8 @@ public class Main {
         
         System.out.println(generator.getLevelFrequencies());
         System.out.println(generator.getIdFrequencies());
+        
+        System.out.println(generator.getRandomLevel("INFO", "ERROR"));
     }
 
 }

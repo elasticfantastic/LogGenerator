@@ -32,7 +32,7 @@ public class Main2 {
                 endingDate = LocalDateTime.of(2018, 06, 15, 8, 59, 59);
             }
             
-        	LogGenerator generator = new LogGenerator(beginningDate, endingDate);
+        	LogGenerator generator = new LogGenerator();
         	
             generator.setIdFrequency("Client", 0.10);
             generator.setIdFrequency("Server", 0.60);
@@ -43,7 +43,7 @@ public class Main2 {
             generator.setLevelFrequency("INFO", 0.30);
             generator.setLevelFrequency("DEBUG", 0.55);
             
-            logs.add(generator.getLog(inputs));
+            logs.add(generator.getLog(LocalDateTime.now(), inputs));
         }
         
         Collections.sort(logs);
