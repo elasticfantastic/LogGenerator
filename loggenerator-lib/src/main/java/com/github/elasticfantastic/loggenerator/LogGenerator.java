@@ -154,7 +154,7 @@ public class LogGenerator {
 		return ArrayUtility.getRandom(arr);
 	}
 
-	private static LocalDateTime getRandom(LocalDateTime beginningDate, LocalDateTime endingDate) {
+	public static LocalDateTime getRandom(LocalDateTime beginningDate, LocalDateTime endingDate) {
 		// Random random = new Random();
 		if (beginningDate.equals(endingDate)) {
 			return beginningDate;
