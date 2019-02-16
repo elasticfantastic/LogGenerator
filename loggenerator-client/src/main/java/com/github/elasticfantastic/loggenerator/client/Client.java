@@ -26,7 +26,7 @@ public class Client {
 		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
 
 		String host = "http://localhost:8080/order";
-		int millisToSleep = 1000;
+		int millisToSleep = 2000;
 		if (args.length != 0) {
 			host = (args[0] != null ? args[0] : host);
 			millisToSleep = (args[1] != null ? Integer.valueOf(args[1]) : millisToSleep);
@@ -34,7 +34,7 @@ public class Client {
 		while (true) {
 			// Generate request output
 			Map<String, Object> inputs = new HashMap<>();
-			inputs.put("id", "Client");
+			inputs.put("id", "Client1");
 			inputs.put("level", "INFO");
 			inputs.put("message", "Sending request to " + host);
 

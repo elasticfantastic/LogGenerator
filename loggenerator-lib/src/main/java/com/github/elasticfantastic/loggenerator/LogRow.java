@@ -18,7 +18,7 @@ public class LogRow implements Comparable<LogRow> {
 		this.date = date;
 		this.message = message;
 
-		this.formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'");
+		this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	}
 
 	public String getId() {

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
+import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
 import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
 
 import org.springframework.http.HttpStatus;
@@ -27,14 +28,10 @@ public class OrderController {
 
 	private LogGenerator generator;
 
-	@RequestMapping(value = "/order", method = RequestMethod.POST)
-	public ResponseEntity<Object> addOrder( @RequestParam("user") String user, HttpServletRequest request)
-			throws IOException {
-		// Generate request output
-		Map<String, Object> inputs = new HashMap<>();
-		inputs.put("id", "Server");
-		inputs.put("level", "INFO");
-		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
+	private ThreadTest test;
+
+	public OrderController() {
+		System.out.println("Running constructor for OrderController");
 
 		this.generator = new LogGenerator();
 
@@ -42,6 +39,20 @@ public class OrderController {
 		this.generator.setLevelFrequency("WARN", 0.10);
 		this.generator.setLevelFrequency("INFO", 0.25);
 		this.generator.setLevelFrequency("DEBUG", 0.55);
+
+		Runnable r = new ThreadTest(generator);
+		Thread t = new Thread(r);
+		t.start();
+	}
+
+	@RequestMapping(value = "/order", method = RequestMethod.POST)
+	public ResponseEntity<Object> addOrder(@RequestParam("user") String user, HttpServletRequest request)
+			throws IOException {
+		// Generate request output
+		Map<String, Object> inputs = new HashMap<>();
+		inputs.put("id", "Server1");
+		inputs.put("level", "INFO");
+		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
 			LogRow logRow = this.generator.getLog(LocalDateTime.now(), inputs);

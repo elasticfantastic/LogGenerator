@@ -1,7 +1,12 @@
 package com.github.elasticfantastic.loggenerator;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -10,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
 
@@ -100,15 +106,15 @@ public class LogGenerator {
 		}
 		throw new IllegalArgumentException("Array doesn't contain empty indices");
 	}
-	
+
 	public String getRandomId() {
 		return getRandom(this.idFrequencies);
 	}
-	
+
 	public String getRandomLevel() {
 		return getRandom(this.levelFrequencies);
 	}
-	
+
 	public String getRandomLevel(String... levels) {
 		int totalFrequency = 0;
 		Map<String, Double> frequencies = getLevelFrequencies();
@@ -149,21 +155,44 @@ public class LogGenerator {
 	}
 
 	private static LocalDateTime getRandom(LocalDateTime beginningDate, LocalDateTime endingDate) {
-		Random random = new Random();
+		// Random random = new Random();
 		if (beginningDate.equals(endingDate)) {
 			return beginningDate;
-		} else if (beginningDate.toLocalDate().equals(endingDate.toLocalDate())
-				&& !beginningDate.toLocalTime().equals(endingDate.toLocalTime())) {
-			long nanosBetween = ChronoUnit.NANOS.between(beginningDate, endingDate);
-			long nanos = 0 + (long) (random.nextDouble() * (nanosBetween - 0));
-			LocalTime time = LocalTime.ofNanoOfDay(nanos);
-			return LocalDateTime.of(beginningDate.toLocalDate(), time);
-		} else {
-			long daysBetween = ChronoUnit.DAYS.between(beginningDate, endingDate);
-			LocalDateTime randomizedDate = beginningDate.plusDays(random.nextInt((int) daysBetween));
-			LocalTime time = LocalTime.ofNanoOfDay(random.nextInt(86400000) * 1000000L);
-			return LocalDateTime.of(randomizedDate.toLocalDate(), time);
 		}
+		
+		// else if (beginningDate.toLocalDate().equals(endingDate.toLocalDate())
+//				&& !beginningDate.toLocalTime().equals(endingDate.toLocalTime())) {
+//			long nanosBetween = ChronoUnit.NANOS.between(beginningDate, endingDate);
+//			long nanos = 0 + (long) (random.nextDouble() * (nanosBetween - 0));
+//			LocalTime time = LocalTime.ofNanoOfDay(nanos);
+//			return LocalDateTime.of(beginningDate.toLocalDate(), time);
+//		} else {
+
+		// ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
+
+//			return LocalDateTime.ofInstant(random.nextInstant(beginningDate.atZone(UTC_ZONE_ID).toInstant(),
+//					endingDate.atZone(UTC_ZONE_ID).toInstant()), UTC_ZONE_ID);
+
+		long beginningInstant = beginningDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+		// beginningInstant.
+
+		// Period p = Period.between(beginningDate, endingDate);
+
+		long endInstant = endingDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+
+		long randomInstant = ThreadLocalRandom.current().nextLong(beginningInstant, endInstant);
+
+		Instant instant = Instant.ofEpochMilli(randomInstant);
+
+		LocalDateTime newDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+
+		return newDateTime;
+
+//			long daysBetween = ChronoUnit.DAYS.between(beginningDate, endingDate);
+//			LocalDateTime randomizedDate = beginningDate.plusDays(random.nextInt((int) daysBetween));
+//			LocalTime time = LocalTime.ofNanoOfDay(random.nextInt(86400000) * 1000000L);
+//			return LocalDateTime.of(randomizedDate.toLocalDate(), time);
 	}
+	// }
 
 }
