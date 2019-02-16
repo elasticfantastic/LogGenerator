@@ -26,7 +26,7 @@ public class Client {
 		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
 
 		String host = "http://localhost:8080/order";
-		int millisToSleep = 2000;
+		int millisToSleep = 2011;
 		if (args.length != 0) {
 			host = (args[0] != null ? args[0] : host);
 			millisToSleep = (args[1] != null ? Integer.valueOf(args[1]) : millisToSleep);
@@ -36,7 +36,7 @@ public class Client {
 			Map<String, Object> inputs = new HashMap<>();
 			inputs.put("id", "Client1");
 			inputs.put("level", "INFO");
-			inputs.put("message", "Sending request to " + host);
+			inputs.put("message", "Sending order request to " + host);
 
 			LogGenerator generator = new LogGenerator();
 

@@ -40,13 +40,22 @@ public class GenerateLog {
 			
 			LocalDateTime generatedDate = LogGenerator.getRandom(beginningDate, endingDate);
 
+			LocalDateTime spikeDateBeginningApril = LocalDateTime.of(2018, 4, 2, 7, 00, 00);
+			LocalDateTime spikeDateEndingJune = LocalDateTime.of(2018, 6, 14, 2, 34, 54);
+			
 			LocalDateTime spikeDateBeginningAugust = LocalDateTime.of(2018, 8, 15, 14, 00, 00);
 			LocalDateTime spikeDateEndingAugust = LocalDateTime.of(2018, 8, 15, 19, 59, 59);
 			
 			LocalDateTime spikeDateBeginningNovember = LocalDateTime.of(2018, 11, 3, 12, 00, 00);
 			LocalDateTime spikeDateEndingNovember = LocalDateTime.of(2018, 11, 22, 16, 59, 59);
 			
-			if (generatedDate.isAfter(spikeDateBeginningAugust) && generatedDate.isBefore(spikeDateEndingAugust)) {
+			if (generatedDate.isAfter(spikeDateBeginningApril) && generatedDate.isBefore(spikeDateEndingJune)) {
+				// April to June has a slight distribution difference
+				generator.setLevelFrequency("ERROR", 0.04);
+				generator.setLevelFrequency("WARN", 0.16);
+				generator.setLevelFrequency("INFO", 0.29);
+				generator.setLevelFrequency("DEBUG", 0.51);
+			} else if (generatedDate.isAfter(spikeDateBeginningAugust) && generatedDate.isBefore(spikeDateEndingAugust)) {
 				// Generate a bunch of ERROR and WARNING logs on 8 August between 14:00 and 20:00
 				generator.setLevelFrequency("ERROR", 0.35);
 				generator.setLevelFrequency("WARN", 0.30);

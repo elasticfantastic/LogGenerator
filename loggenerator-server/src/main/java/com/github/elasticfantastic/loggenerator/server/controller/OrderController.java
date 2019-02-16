@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
-	private static final String LOG_FILE = "log_server.txt";
+	private static final String LOG_FILE = "log_server1.txt";
 
 	private LogGenerator generator;
 
@@ -50,7 +50,7 @@ public class OrderController {
 		Map<String, Object> inputs = new HashMap<>();
 		inputs.put("id", "Server1");
 		inputs.put("level", "INFO");
-		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
+		inputs.put("message", "Received order request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
 			LogRow logRow = this.generator.getLog(LocalDateTime.now(), inputs);

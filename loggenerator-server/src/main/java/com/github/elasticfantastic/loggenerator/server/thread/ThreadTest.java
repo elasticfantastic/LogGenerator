@@ -13,7 +13,7 @@ import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
 
 public class ThreadTest implements Runnable {
 
-	private static final String LOG_FILE = "log_server.txt";
+	private static final String LOG_FILE = "log_server1.txt";
 
 	private LogGenerator generator;
 
@@ -41,7 +41,7 @@ public class ThreadTest implements Runnable {
 			}
 			
 			try {
-				Thread.sleep(4000);
+				Thread.sleep(4007);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
