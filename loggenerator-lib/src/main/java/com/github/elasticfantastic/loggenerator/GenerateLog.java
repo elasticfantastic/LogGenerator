@@ -3,9 +3,9 @@ package com.github.elasticfantastic.loggenerator;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,10 +18,10 @@ public class GenerateLog {
 		// LocalDateTime endingDate2 = LocalDateTime.of(2018, 01, 01, 23, 59, 59);
 
 		List<LogRow> logs = new ArrayList<>();
+		
+		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
 
 		int iterations = 250000;
-//		int iterationsTenThousandth = iterations / 1000;
-//		int iterationsForSpike = Math.max(50, iterationsTenThousandth);
 		for (int i = 0; i < iterations; i++) {
 			LogGenerator generator = new LogGenerator();
 
@@ -34,20 +34,20 @@ public class GenerateLog {
 			
 			Map<String, Object> inputs = new HashMap<>();
 
-			LocalDateTime beginningDate = LocalDateTime.of(2018, 01, 01, 00, 00, 00);
+			ZonedDateTime beginningDate = ZonedDateTime.of(2018, 01, 01, 00, 00, 00, 00, zoneId);
 			// LocalDateTime endingDate = LocalDateTime.of(2018, 12, 31, 23, 59, 59);
-			LocalDateTime endingDate = LocalDateTime.now();
+			ZonedDateTime endingDate = ZonedDateTime.of(LocalDateTime.now(), zoneId);
 			
-			LocalDateTime generatedDate = LogGenerator.getRandom(beginningDate, endingDate);
+			ZonedDateTime generatedDate = LogGenerator.getRandom(beginningDate, endingDate, zoneId);
 
-			LocalDateTime spikeDateBeginningApril = LocalDateTime.of(2018, 4, 2, 7, 00, 00);
-			LocalDateTime spikeDateEndingJune = LocalDateTime.of(2018, 6, 14, 2, 34, 54);
+			ZonedDateTime spikeDateBeginningApril = ZonedDateTime.of(2018, 4, 2, 7, 00, 00, 00, zoneId);
+			ZonedDateTime spikeDateEndingJune = ZonedDateTime.of(2018, 6, 14, 2, 34, 54, 999, zoneId);
 			
-			LocalDateTime spikeDateBeginningAugust = LocalDateTime.of(2018, 8, 15, 14, 00, 00);
-			LocalDateTime spikeDateEndingAugust = LocalDateTime.of(2018, 8, 15, 19, 59, 59);
+			ZonedDateTime spikeDateBeginningAugust = ZonedDateTime.of(2018, 8, 15, 14, 00, 00, 00, zoneId);
+			ZonedDateTime spikeDateEndingAugust = ZonedDateTime.of(2018, 8, 15, 19, 59, 59, 999, zoneId);
 			
-			LocalDateTime spikeDateBeginningNovember = LocalDateTime.of(2018, 11, 3, 12, 00, 00);
-			LocalDateTime spikeDateEndingNovember = LocalDateTime.of(2018, 11, 22, 16, 59, 59);
+			ZonedDateTime spikeDateBeginningNovember = ZonedDateTime.of(2018, 11, 3, 12, 00, 00, 00, zoneId);
+			ZonedDateTime spikeDateEndingNovember = ZonedDateTime.of(2018, 11, 22, 16, 59, 59, 999, zoneId);
 			
 			if (generatedDate.isAfter(spikeDateBeginningApril) && generatedDate.isBefore(spikeDateEndingJune)) {
 				// April to June has a slight distribution difference
@@ -75,7 +75,7 @@ public class GenerateLog {
 			}
 
 			// logs.add(generator.getLog(LocalDateTime.now(), inputs));
-			logs.add(generator.getLog(generatedDate, inputs));
+			logs.add(generator.getLog(generatedDate, zoneId, inputs));
 		}
 
 		Collections.sort(logs);

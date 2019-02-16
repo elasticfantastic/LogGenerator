@@ -10,7 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public class Client {
 	private static final String LOG_FILE = "log_client.txt";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
+		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
+		
 		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
 
 		String host = "http://localhost:8080/order";
@@ -46,7 +49,7 @@ public class Client {
 //            generator.setLevelFrequency("DEBUG", 0.55);
 
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
-				LogRow logRow = generator.getLog(LocalDateTime.now(), inputs);
+				LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId, inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
 			}
@@ -90,7 +93,7 @@ public class Client {
 			inputs.put("message", result);
 
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
-				LogRow logRow = generator.getLog(LocalDateTime.now(), inputs);
+				LogRow logRow = generator.getLog(ZonedDateTime.now(), ZoneId.of("Europe/Stockholm"), inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
 			}

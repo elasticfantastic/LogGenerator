@@ -3,7 +3,7 @@ package com.github.elasticfantastic.loggenerator.server.thread;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class ThreadTest implements Runnable {
 			inputs.put("message", MessageUtility.getMessage(level, null));
 
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
-				LogRow logRow = this.generator.getLog(LocalDateTime.now(), inputs);
+				LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
 			} catch (IOException e) {
