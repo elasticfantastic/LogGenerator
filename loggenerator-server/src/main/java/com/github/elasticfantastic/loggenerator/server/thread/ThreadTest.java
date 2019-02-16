@@ -27,7 +27,7 @@ public class ThreadTest implements Runnable {
 			String level = this.generator.getRandomLevel("WARN", "DEBUG");
 
 			Map<String, Object> inputs = new HashMap<>();
-			inputs.put("id", "Server");
+			inputs.put("id", "Server1");
 			inputs.put("level", level);
 			inputs.put("message", MessageUtility.getMessage(level, null));
 

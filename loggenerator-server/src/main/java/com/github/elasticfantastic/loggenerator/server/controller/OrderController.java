@@ -31,8 +31,6 @@ public class OrderController {
 	private ThreadTest test;
 
 	public OrderController() {
-		System.out.println("Running constructor for OrderController");
-
 		this.generator = new LogGenerator();
 
 		this.generator.setLevelFrequency("ERROR", 0.10);
@@ -62,7 +60,7 @@ public class OrderController {
 
 		// Generate response output
 		inputs = new HashMap<>();
-		inputs.put("id", "Server");
+		inputs.put("id", "Server1");
 
 		String level = this.generator.getRandomLevel("INFO", "ERROR");
 		String message = MessageUtility.getMessage(level, user);
