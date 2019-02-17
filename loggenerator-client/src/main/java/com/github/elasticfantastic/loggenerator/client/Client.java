@@ -20,7 +20,7 @@ import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
 
 public class Client {
 
-	private static final String LOG_FILE = "log_client.txt";
+	private static final String LOG_FILE = "log_client1.txt";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
