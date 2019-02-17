@@ -1,19 +1,12 @@
 package com.github.elasticfantastic.loggenerator;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -132,17 +125,22 @@ public class LogGenerator {
 	}
 
 	public LogRow getLog() {
-		return getLog(LocalDateTime.now(), LocalDateTime.now(), new HashMap<String, Object>());
+		return getLog(ZonedDateTime.now(), new HashMap<String, Object>());
 	}
 
-	public LogRow getLog(LocalDateTime specificDate, Map<String, Object> inputs) {
-		return getLog(specificDate, specificDate, inputs);
+	public LogRow getLog(ZonedDateTime specificDate, Map<String, Object> inputs) {
+		return getLog(specificDate, specificDate, ZoneId.of("Europe/Stockholm"), inputs);
 	}
 
-	public LogRow getLog(LocalDateTime beginningDate, LocalDateTime endingDate, Map<String, Object> inputs) {
+	public LogRow getLog(ZonedDateTime specificDate, ZoneId zoneId, Map<String, Object> inputs) {
+		return getLog(specificDate, specificDate, zoneId, inputs);
+	}
+
+	public LogRow getLog(ZonedDateTime beginningDate, ZonedDateTime endingDate, ZoneId zoneId,
+			Map<String, Object> inputs) {
 		Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
 		Object level = inputs.getOrDefault("level", getRandom(this.levelFrequencies));
-		LocalDateTime date = getRandom(beginningDate, endingDate);
+		ZonedDateTime date = getRandom(beginningDate, endingDate, zoneId);
 
 		String[] messages = this.messagesMapping.get(level);
 		Object message = inputs.getOrDefault("message", getRandom(messages));
@@ -154,45 +152,17 @@ public class LogGenerator {
 		return ArrayUtility.getRandom(arr);
 	}
 
-	public static LocalDateTime getRandom(LocalDateTime beginningDate, LocalDateTime endingDate) {
-		// Random random = new Random();
+	public static ZonedDateTime getRandom(ZonedDateTime beginningDate, ZonedDateTime endingDate, ZoneId zoneId) {
 		if (beginningDate.equals(endingDate)) {
 			return beginningDate;
 		}
-		
-		// else if (beginningDate.toLocalDate().equals(endingDate.toLocalDate())
-//				&& !beginningDate.toLocalTime().equals(endingDate.toLocalTime())) {
-//			long nanosBetween = ChronoUnit.NANOS.between(beginningDate, endingDate);
-//			long nanos = 0 + (long) (random.nextDouble() * (nanosBetween - 0));
-//			LocalTime time = LocalTime.ofNanoOfDay(nanos);
-//			return LocalDateTime.of(beginningDate.toLocalDate(), time);
-//		} else {
-
-		// ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
-
-//			return LocalDateTime.ofInstant(random.nextInstant(beginningDate.atZone(UTC_ZONE_ID).toInstant(),
-//					endingDate.atZone(UTC_ZONE_ID).toInstant()), UTC_ZONE_ID);
-
-		long beginningInstant = beginningDate.toInstant(ZoneOffset.UTC).toEpochMilli();
-		// beginningInstant.
-
-		// Period p = Period.between(beginningDate, endingDate);
-
-		long endInstant = endingDate.toInstant(ZoneOffset.UTC).toEpochMilli();
-
+		long beginningInstant = beginningDate.toInstant().toEpochMilli();
+		long endInstant = endingDate.toInstant().toEpochMilli();
 		long randomInstant = ThreadLocalRandom.current().nextLong(beginningInstant, endInstant);
 
 		Instant instant = Instant.ofEpochMilli(randomInstant);
 
-		LocalDateTime newDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-
-		return newDateTime;
-
-//			long daysBetween = ChronoUnit.DAYS.between(beginningDate, endingDate);
-//			LocalDateTime randomizedDate = beginningDate.plusDays(random.nextInt((int) daysBetween));
-//			LocalTime time = LocalTime.ofNanoOfDay(random.nextInt(86400000) * 1000000L);
-//			return LocalDateTime.of(randomizedDate.toLocalDate(), time);
+		return ZonedDateTime.ofInstant(instant, zoneId);
 	}
-	// }
 
 }

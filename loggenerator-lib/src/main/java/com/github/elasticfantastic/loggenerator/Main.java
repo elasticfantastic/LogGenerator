@@ -1,7 +1,9 @@
 package com.github.elasticfantastic.loggenerator;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 public class Main {
@@ -23,11 +25,17 @@ public class Main {
         
         System.out.println(generator.getRandomLevel("INFO", "ERROR"));
         
-        LocalDateTime time1 = LocalDateTime.of(2018, 12, 31, 00, 00, 00);
-        LocalDateTime time2 = LocalDateTime.of(2019, 01, 01, 23, 59, 59);
+        ZonedDateTime time3 = ZonedDateTime.of(2018, 12, 31, 00, 00, 00, 00, ZoneId.systemDefault());
+        ZonedDateTime time4 = ZonedDateTime.of(2018, 01, 01, 00, 00, 00, 00, ZoneId.systemDefault());
+        
+        System.out.println(time3);
+        System.out.println(time4);
+        
+        System.out.println(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time3));
+        System.out.println(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(time4));
         
         for (int i = 0; i < 10; i++) {
-        	System.out.println(generator.getLog(time1, time2, new HashMap<>()));
+        	System.out.println(generator.getLog(time3, time4, ZoneId.of("Europe/Stockholm"), new HashMap<>()));
         }
         
     }

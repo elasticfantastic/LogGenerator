@@ -1,24 +1,20 @@
 package com.github.elasticfantastic.loggenerator;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LogRow implements Comparable<LogRow> {
 
 	private String id;
 	private String level;
-	private LocalDateTime date;
+	private ZonedDateTime date;
 	private String message;
 
-	private DateTimeFormatter formatter;
-
-	public LogRow(String id, String level, LocalDateTime date, String message) {
+	public LogRow(String id, String level, ZonedDateTime date, String message) {
 		this.id = id;
 		this.level = level;
 		this.date = date;
 		this.message = message;
-
-		this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	}
 
 	public String getId() {
@@ -37,11 +33,11 @@ public class LogRow implements Comparable<LogRow> {
 		this.level = level;
 	}
 
-	public LocalDateTime getDate() {
+	public ZonedDateTime getDate() {
 		return this.date;
 	}
 
-	public void setDate(LocalDateTime date) {
+	public void setDate(ZonedDateTime date) {
 		this.date = date;
 	}
 
@@ -55,8 +51,10 @@ public class LogRow implements Comparable<LogRow> {
 
 	@Override
 	public String toString() {
-		return String.format("[%s] [%s] [%s] - %s", this.id, this.level, this.date.format(this.formatter),
-				this.message);
+		//System.out.println(date);
+		String dateAsString = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(this.date);
+		//System.out.println(dateAsString);
+		return String.format("[%s] [%s] [%s] - %s", this.id, this.level, dateAsString, this.message);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package com.github.elasticfantastic.loggenerator.server.controller;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +28,6 @@ public class OrderController {
 
 	private LogGenerator generator;
 
-	private ThreadTest test;
-
 	public OrderController() {
 		this.generator = new LogGenerator();
 
@@ -53,7 +51,7 @@ public class OrderController {
 		inputs.put("message", "Received order request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
-			LogRow logRow = this.generator.getLog(LocalDateTime.now(), inputs);
+			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
 		}
@@ -69,7 +67,7 @@ public class OrderController {
 		inputs.put("message", message);
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
-			LogRow logRow = this.generator.getLog(LocalDateTime.now(), inputs);
+			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
 
