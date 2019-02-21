@@ -13,6 +13,7 @@ import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
 import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
 import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
+import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class OrderController {
-
-	private static final String LOG_FILE = "log_server1.txt";
 
 	private LogGenerator generator;
 
@@ -44,13 +43,15 @@ public class OrderController {
 	@RequestMapping(value = "/order", method = RequestMethod.POST)
 	public ResponseEntity<Object> addOrder(@RequestParam("user") String user, HttpServletRequest request)
 			throws IOException {
+		String logFile = ParameterContainer.getParameter("logFile");
+		
 		// Generate request output
 		Map<String, Object> inputs = new HashMap<>();
 		inputs.put("id", "Server1");
 		inputs.put("level", "INFO");
 		inputs.put("message", "Received order request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
@@ -66,7 +67,7 @@ public class OrderController {
 		inputs.put("level", level);
 		inputs.put("message", message);
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));

@@ -21,19 +21,27 @@ import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
 
 public class Client {
 
-	private static final String LOG_FILE = "log_client1.txt";
+	//private static final String LOG_FILE = "log_client1.txt";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
 		
 		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
 
+		String logFile = "log_client1.txt";
 		String host = "http://localhost:8080/order";
 		int millisToSleep = 2011;
-		if (args.length != 0) {
-			host = (args[0] != null ? args[0] : host);
-			millisToSleep = (args[1] != null ? Integer.valueOf(args[1]) : millisToSleep);
+		if (args.length >= 1) {
+			System.out.println(args[0]);
+			logFile = (args[0] != null ? args[0] : logFile);
 		}
+		if (args.length >= 2) {
+			host = (args[1] != null ? args[1] : host);
+		}
+		if (args.length >= 3) {
+			millisToSleep = (args[2] != null ? Integer.valueOf(args[2]) : millisToSleep);
+		}
+			
 		while (true) {
 			// Generate request output
 			Map<String, Object> inputs = new HashMap<>();
@@ -48,7 +56,7 @@ public class Client {
 //            generator.setLevelFrequency("INFO", 0.30);
 //            generator.setLevelFrequency("DEBUG", 0.55);
 
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 				LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId, inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
@@ -92,8 +100,8 @@ public class Client {
 			inputs.put("level", level);
 			inputs.put("message", result);
 
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
-				LogRow logRow = generator.getLog(ZonedDateTime.now(), ZoneId.of("Europe/Stockholm"), inputs);
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+				LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId, inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
 			}

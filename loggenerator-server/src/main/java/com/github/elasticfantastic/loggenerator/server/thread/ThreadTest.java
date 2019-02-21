@@ -10,10 +10,9 @@ import java.util.Map;
 import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
 import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
+import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
 public class ThreadTest implements Runnable {
-
-	private static final String LOG_FILE = "log_server1.txt";
 
 	private LogGenerator generator;
 
@@ -24,6 +23,8 @@ public class ThreadTest implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
+			String logFile = ParameterContainer.getParameter("logFile");
+			
 			String level = this.generator.getRandomLevel("WARN", "DEBUG");
 
 			Map<String, Object> inputs = new HashMap<>();
@@ -31,7 +32,7 @@ public class ThreadTest implements Runnable {
 			inputs.put("level", level);
 			inputs.put("message", MessageUtility.getMessage(level, null));
 
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOG_FILE, true))) {
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 				LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
