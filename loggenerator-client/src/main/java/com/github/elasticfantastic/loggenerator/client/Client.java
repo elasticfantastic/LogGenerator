@@ -29,7 +29,7 @@ public class Client {
 		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
 
 		String logFile = "log_client1.txt";
-		String host = "http://localhost:8080/order";
+		String host = "http://localhost:8080/order/add";
 		int millisToSleep = 2011;
 		if (args.length >= 1) {
 			System.out.println(args[0]);

@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
+import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
 import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
+import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
+import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
 import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
 import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
@@ -25,9 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
+	private CustomerService customerService;
+
 	private LogGenerator generator;
 
 	public OrderController() {
+		this.customerService = new CustomerService();
+
 		this.generator = new LogGenerator();
 
 		this.generator.setLevelFrequency("ERROR", 0.10);
@@ -41,10 +48,10 @@ public class OrderController {
 	}
 
 	@RequestMapping(value = "/order", method = RequestMethod.POST)
-	public ResponseEntity<Object> addOrder(@RequestParam("user") String user, HttpServletRequest request)
+	public ResponseEntity<Object> order(@RequestParam("user") String user, HttpServletRequest request)
 			throws IOException {
 		String logFile = ParameterContainer.getParameter("logFile");
-		
+
 		// Generate request output
 		Map<String, Object> inputs = new HashMap<>();
 		inputs.put("id", "Server1");
@@ -74,6 +81,18 @@ public class OrderController {
 
 			return new ResponseEntity<>(logRow.getMessage(), getStatus(level));
 		}
+	}
+
+	@RequestMapping(value = "/order/add", method = RequestMethod.POST)
+	public ResponseEntity<Object> addOrder(@RequestParam("user") String user, HttpServletRequest request)
+			throws IOException {
+		String logFile = ParameterContainer.getParameter("logFile");
+
+		// Generate request output
+		String ssn = CollectionUtility.getRandom(customerService.findAllSsns());
+		System.out.println(ssn);
+		
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 
 	public HttpStatus getStatus(String level) {
