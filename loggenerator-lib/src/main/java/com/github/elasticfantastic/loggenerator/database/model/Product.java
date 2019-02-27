@@ -22,14 +22,14 @@ public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "articleNbr")
-	private int id;
-	
+	private int nbr;
+
 	@Column(name = "productName")
 	private String name;
-	
+
 	@Column(name = "price")
 	private double price;
-	
+
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
 			CascadeType.REMOVE }, fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true)
 	private Collection<OrderLine> orderLines;
@@ -37,18 +37,18 @@ public class Product {
 	public Product() {
 		this.orderLines = new ArrayList<>();
 	}
-	
+
 	public Product(String name) {
 		this();
 		this.name = name;
 	}
 
-	public int getId() {
-		return id;
+	public int getNbr() {
+		return nbr;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setNbr(int nbr) {
+		this.nbr = nbr;
 	}
 
 	public String getName() {
@@ -74,5 +74,51 @@ public class Product {
 	public void setOrderLines(Collection<OrderLine> orderLines) {
 		this.orderLines = orderLines;
 	}
-	
+
+	public void addOrderLine(OrderLine orderLine) {
+		if (!orderLines.contains(orderLine)) {
+			orderLines.add(orderLine);
+		}
+		if (orderLine.getProduct() == null) {
+			orderLine.setProduct(this);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(price);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Product other = (Product) obj;
+		if (nbr != other.nbr)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (Double.doubleToLongBits(price) != Double.doubleToLongBits(other.price))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [nbr=" + nbr + ", name=" + name + ", price=" + price + "]";
+	}
+
 }

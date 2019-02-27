@@ -15,6 +15,11 @@ public class OrderLinePK {
 	public OrderLinePK() {
 		
 	}
+	
+	public OrderLinePK(int orderNbr, int articleNbr) {
+		this.orderNbr = orderNbr;
+		this.articleNbr = articleNbr;
+	}
 
 	public int getOrderNbr() {
 		return orderNbr;

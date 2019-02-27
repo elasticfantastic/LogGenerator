@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
@@ -40,7 +41,13 @@ public class CustomerService implements ICustomerService {
 	@Override
 	public Customer update(Customer customer) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		
+		EntityTransaction transaction = entityManager.getTransaction();
+		
+		transaction.begin();
 		entityManager.merge(customer);
+		transaction.commit();
+		
 		return customer;
 	}
 

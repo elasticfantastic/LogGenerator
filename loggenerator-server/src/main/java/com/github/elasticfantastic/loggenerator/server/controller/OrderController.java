@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,6 +18,7 @@ import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
 import com.github.elasticfantastic.loggenerator.database.model.Customer;
 import com.github.elasticfantastic.loggenerator.database.model.Order;
+import com.github.elasticfantastic.loggenerator.database.model.OrderLine;
 import com.github.elasticfantastic.loggenerator.database.model.Product;
 import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
 import com.github.elasticfantastic.loggenerator.database.service.OrderService;
@@ -101,18 +103,29 @@ public class OrderController {
 		String logFile = ParameterContainer.getParameter("logFile");
 
 		// Generate request output
-		// String ssn = CollectionUtility.getRandom(customerService.findAll());
-		Customer customer = CollectionUtility.getRandom(customerService.findAll());
+		// String ssn = CollectionUtility.getRandom(customerService.findAll());		
+		// Customer customer = CollectionUtility.getRandom(customerService.findAll());
+		
+		String ssn = "16081216-2816";
+		Customer customer = customerService.findById(ssn);
 		
 		System.out.println(customer.toString());
 		System.out.println(customer.getOrders().size());
-		// String ssn = "16081216-2816";
 		
 		List<Product> products = new ArrayList<>(productService.findAll());
 		List<Product> randomizedProducts = CollectionUtility.getRandom(products, 4);
 		
 		Order order = new Order(LocalDateTime.now());
-
+		
+		Random random = new Random();
+		
+		for (Product p : randomizedProducts) {
+			OrderLine orderLine = new OrderLine(order, p, random.nextInt(3) + 1);
+			order.addOrderLine(orderLine);
+		}
+		
+		customer.addOrder(order);
+		
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 

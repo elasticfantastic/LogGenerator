@@ -11,9 +11,9 @@
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
       <property name="javax.persistence.jdbc.url"
-        value="jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=ElasticFantastic" />
-      <property name="javax.persistence.jdbc.user" value="elasticfantastic" />
-      <property name="javax.persistence.jdbc.password" value="testtest" />
+        value="jdbc:sqlserver://localhost;databaseName=ElasticFantastic" />
+      <property name="javax.persistence.jdbc.user" value="klaras" />
+      <property name="javax.persistence.jdbc.password" value="klara96" />
       <property name="eclipselink.deploy-on-startup" value="true" />
       <property name="eclipselink.ddl-generation" value="none" />
       <property name="eclipselink.logging.level" value="INFO" />

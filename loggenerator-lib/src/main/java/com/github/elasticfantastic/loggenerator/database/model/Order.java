@@ -27,18 +27,18 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "orderNbr")
 	private int nbr;
-	
+
 	@Column(name = "time")
 	private LocalDateTime time;
 
-	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.EAGER)
+	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerSSN", referencedColumnName = "ssn", nullable = false)
 	private Customer customer;
-	
+
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
-			CascadeType.REMOVE }, fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true)
+			CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
 	private Collection<OrderLine> orderLines;
-	
+
 	public Order() {
 		this.orderLines = new ArrayList<>();
 	}
@@ -47,7 +47,7 @@ public class Order {
 		this();
 		this.time = time;
 	}
-	
+
 	public int getNbr() {
 		return nbr;
 	}
@@ -70,6 +70,9 @@ public class Order {
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+		if (!customer.getOrders().contains(this)) {
+			customer.addOrder(this);
+		}
 	}
 
 	public Collection<OrderLine> getOrderLines() {
@@ -79,14 +82,45 @@ public class Order {
 	public void setOrderLines(Collection<OrderLine> orderLines) {
 		this.orderLines = orderLines;
 	}
-	
+
 	public void addOrderLine(OrderLine orderLine) {
-		orderLines.add(orderLine);
+		if (!orderLines.contains(orderLine)) {
+			System.out.println("no contains");
+			orderLines.add(orderLine);
+		}
+		if (orderLine.getOrder() == null) {
+			orderLine.setOrder(this);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((time == null) ? 0 : time.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Order other = (Order) obj;
+		if (time == null) {
+			if (other.time != null)
+				return false;
+		} else if (!time.equals(other.time))
+			return false;
+		return true;
 	}
 
 	@Override
 	public String toString() {
 		return "Order [nbr=" + nbr + ", time=" + time + "]";
 	}
-	
+
 }
