@@ -13,8 +13,8 @@ public class Server {
 		if (args.length >= 1) {
 			System.out.println(args[0]);
 			logFile = (args[0] != null ? args[0] : logFile);
-			ParameterContainer.putParameter("logFile", logFile);
 		}
+		ParameterContainer.putParameter("logFile", logFile);
         SpringApplication.run(Server.class, args);
     }
 

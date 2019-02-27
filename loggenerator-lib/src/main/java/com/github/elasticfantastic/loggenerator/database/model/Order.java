@@ -1,12 +1,15 @@
 package com.github.elasticfantastic.loggenerator.database.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,12 +19,14 @@ import javax.persistence.Table;
 
 @Entity
 @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o")
+@NamedQuery(name = "Order.findBySsn", query = "SELECT o FROM Order o WHERE o.customer.ssn = :ssn")
 @Table(name = "Orderr")
 public class Order {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "orderNbr")
-	private String nbr;
+	private int nbr;
 	
 	@Column(name = "time")
 	private LocalDateTime time;
@@ -35,20 +40,19 @@ public class Order {
 	private Collection<OrderLine> orderLines;
 	
 	public Order() {
-		
+		this.orderLines = new ArrayList<>();
 	}
 
-	public Order(String nbr, LocalDateTime time) {
+	public Order(LocalDateTime time) {
 		this();
-		this.nbr = nbr;
 		this.time = time;
 	}
 	
-	public String getNbr() {
+	public int getNbr() {
 		return nbr;
 	}
 
-	public void setNbr(String nbr) {
+	public void setNbr(int nbr) {
 		this.nbr = nbr;
 	}
 
@@ -74,6 +78,10 @@ public class Order {
 
 	public void setOrderLines(Collection<OrderLine> orderLines) {
 		this.orderLines = orderLines;
+	}
+	
+	public void addOrderLine(OrderLine orderLine) {
+		orderLines.add(orderLine);
 	}
 
 	@Override

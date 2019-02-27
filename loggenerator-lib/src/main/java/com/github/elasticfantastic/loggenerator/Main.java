@@ -45,7 +45,7 @@ public class Main {
 //    		System.out.println(c.getName());
 //    	}
     	
-    	System.out.println(cs.findById("16081216-2816").getOrder("12").getOrderLines().stream().findFirst().get().getProduct().getName());
+    	System.out.println(cs.findById("16081216-2816").getOrder(12).getOrderLines().stream().findFirst().get().getProduct().getName());
     	
     	System.out.println(cs.findAllSsns());
         

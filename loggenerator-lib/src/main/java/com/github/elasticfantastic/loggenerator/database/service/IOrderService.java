@@ -8,4 +8,6 @@ public interface IOrderService {
 
 	Collection<Order> findAll();
 	
+	Collection<Order> findBySsn(String ssn);
+	
 }

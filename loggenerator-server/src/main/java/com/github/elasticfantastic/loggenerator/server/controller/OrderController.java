@@ -3,15 +3,24 @@ package com.github.elasticfantastic.loggenerator.server.controller;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
+import com.github.elasticfantastic.loggenerator.database.model.Customer;
+import com.github.elasticfantastic.loggenerator.database.model.Order;
+import com.github.elasticfantastic.loggenerator.database.model.Product;
 import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
+import com.github.elasticfantastic.loggenerator.database.service.OrderService;
+import com.github.elasticfantastic.loggenerator.database.service.ProductService;
 import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
 import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
 import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
@@ -29,11 +38,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
 	private CustomerService customerService;
+	private OrderService orderService;
+	private ProductService productService;
 
 	private LogGenerator generator;
 
 	public OrderController() {
 		this.customerService = new CustomerService();
+		this.productService = new ProductService();
 
 		this.generator = new LogGenerator();
 
@@ -89,9 +101,18 @@ public class OrderController {
 		String logFile = ParameterContainer.getParameter("logFile");
 
 		// Generate request output
-		String ssn = CollectionUtility.getRandom(customerService.findAllSsns());
-		System.out.println(ssn);
+		// String ssn = CollectionUtility.getRandom(customerService.findAll());
+		Customer customer = CollectionUtility.getRandom(customerService.findAll());
 		
+		System.out.println(customer.toString());
+		System.out.println(customer.getOrders().size());
+		// String ssn = "16081216-2816";
+		
+		List<Product> products = new ArrayList<>(productService.findAll());
+		List<Product> randomizedProducts = CollectionUtility.getRandom(products, 4);
+		
+		Order order = new Order(LocalDateTime.now());
+
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 

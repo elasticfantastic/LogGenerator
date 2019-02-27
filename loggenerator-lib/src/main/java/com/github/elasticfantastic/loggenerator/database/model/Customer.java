@@ -35,7 +35,7 @@ public class Customer {
 	private String city;
 
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
-			CascadeType.REMOVE }, fetch = FetchType.EAGER, mappedBy = "customer", orphanRemoval = true)
+			CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "customer", orphanRemoval = true)
 	private Collection<Order> orders;
 
 	public Customer() {
@@ -98,8 +98,12 @@ public class Customer {
 		this.orders = orders;
 	}
 	
-	public Order getOrder(String orderNbr) {
-		return orders.stream().filter(x -> orderNbr.equals(x.getNbr())).findFirst().orElse(null);
+	public void addOrder(Order order) {
+		orders.add(order);
+	}
+	
+	public Order getOrder(int orderNbr) {
+		return orders.stream().filter(x -> orderNbr == x.getNbr()).findFirst().orElse(null);
 	}
 
 	@Override

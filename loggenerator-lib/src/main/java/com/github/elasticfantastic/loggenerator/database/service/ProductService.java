@@ -7,31 +7,27 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import com.github.elasticfantastic.loggenerator.database.model.Order;
+import com.github.elasticfantastic.loggenerator.database.model.Product;
 
-public class OrderService implements IOrderService {
+public class ProductService implements IProductService {
 
 	private EntityManagerFactory entityManagerFactory;
 
-	public OrderService() {
+	public ProductService() {
 		this.entityManagerFactory = Persistence.createEntityManagerFactory("ElasticFantasticDS");
 	}
 	
 	@Override
-	public Collection<Order> findAll() {
+	public Product findById(String nbr) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		TypedQuery<Order> tq = entityManager.createNamedQuery("Order.findAll", Order.class);
-		return tq.getResultList();
+		return entityManager.find(Product.class, nbr);
 	}
-
-	@Override
-	public Collection<Order> findBySsn(String ssn) {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		TypedQuery<Order> tq = entityManager.createNamedQuery("Order.findBySsn", Order.class);
-		tq.setParameter("ssn", ssn);
-		return tq.getResultList();
-	}
-
 	
+	@Override
+	public Collection<Product> findAll() {
+		EntityManager entityManager = entityManagerFactory.createEntityManager();
+		TypedQuery<Product> tq = entityManager.createNamedQuery("Product.findAll", Product.class);
+		return tq.getResultList();
+	}
 	
 }
