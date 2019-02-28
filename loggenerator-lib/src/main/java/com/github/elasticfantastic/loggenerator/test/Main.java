@@ -1,4 +1,4 @@
-package com.github.elasticfantastic.loggenerator;
+package com.github.elasticfantastic.loggenerator.test;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import com.github.elasticfantastic.loggenerator.database.service.CustomerService
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 //        LogGenerator generator = new LogGenerator();
 //        
 //        generator.setIdFrequency("Client", 0.10);
@@ -38,17 +38,17 @@ public class Main {
 //        for (int i = 0; i < 10; i++) {
 //        	System.out.println(generator.getLog(time3, time4, ZoneId.of("Europe/Stockholm"), new HashMap<>()));
 //        }
-    	
-    	CustomerService cs = new CustomerService();
+
+		CustomerService cs = new CustomerService();
 //    	Collection<Customer> customers = cs.findAll();
 //    	for (Customer c : customers) {
 //    		System.out.println(c.getName());
 //    	}
-    	
-    	System.out.println(cs.findById("16081216-2816").getOrder(12).getOrderLines().stream().findFirst().get().getProduct().getName());
-    	
-    	System.out.println(cs.findAllSsns());
-        
-    }
+
+		// System.out.println(cs.findById("16081216-2816").getOrder(12).getOrderLines().stream().findFirst().get().getProduct().getName());
+
+		System.out.println(cs.findAllSsns());
+
+	}
 
 }

@@ -34,7 +34,7 @@ public class Customer {
 	@Column(name = "city")
 	private String city;
 
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
 			CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "customer", orphanRemoval = true)
 	private Collection<Order> orders;
 
@@ -89,27 +89,27 @@ public class Customer {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
+
 	public Collection<Order> getOrders() {
 		return orders;
 	}
-	
+
 	public void setOrders(Collection<Order> orders) {
 		this.orders = orders;
 	}
-	
+
 	public void addOrder(Order order) {
 		if (!orders.contains(order)) {
-			orders.add(order);	
+			orders.add(order);
 		}
 		if (order.getCustomer() == null) {
 			order.setCustomer(this);
 		}
 	}
-	
-	public Order getOrder(int orderNbr) {
-		return orders.stream().filter(x -> orderNbr == x.getNbr()).findFirst().orElse(null);
-	}
+
+//	public Order getOrder(int orderNbr) {
+//		return orders.stream().filter(x -> orderNbr == x.getNbr()).findFirst().orElse(null);
+//	}
 
 	@Override
 	public int hashCode() {

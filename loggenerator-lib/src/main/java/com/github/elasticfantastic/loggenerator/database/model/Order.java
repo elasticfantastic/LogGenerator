@@ -19,7 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o")
-@NamedQuery(name = "Order.findBySsn", query = "SELECT o FROM Order o WHERE o.customer.ssn = :ssn")
+//@NamedQuery(name = "Order.findBySsn", query = "SELECT o FROM Order o WHERE o.customer.ssn = :ssn")
 @Table(name = "Orderr")
 public class Order {
 
@@ -31,16 +31,16 @@ public class Order {
 	@Column(name = "time")
 	private LocalDateTime time;
 
-	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerSSN", referencedColumnName = "ssn", nullable = false)
 	private Customer customer;
 
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
-			CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
-	private Collection<OrderLine> orderLines;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+	private Collection<OrderLine> products;
 
 	public Order() {
-		this.orderLines = new ArrayList<>();
+		this.nbr = Integer.MIN_VALUE;
+		this.products = new ArrayList<>();
 	}
 
 	public Order(LocalDateTime time) {
@@ -74,22 +74,22 @@ public class Order {
 			customer.addOrder(this);
 		}
 	}
-
-	public Collection<OrderLine> getOrderLines() {
-		return orderLines;
+	
+	public Collection<OrderLine> getProducts() {
+		return products;
 	}
 
-	public void setOrderLines(Collection<OrderLine> orderLines) {
-		this.orderLines = orderLines;
-	}
+	public void addProduct(Product product, int quantity) {
+		OrderLine orderLine = new OrderLine();
+		orderLine.setOrder(this);
+		orderLine.setProduct(product);
+		orderLine.setOrderNbr(this.getNbr());
+		orderLine.setProductNbr(product.getNbr());
+		orderLine.setQuantity(quantity);
 
-	public void addOrderLine(OrderLine orderLine) {
-		if (!orderLines.contains(orderLine)) {
-			System.out.println("no contains");
-			orderLines.add(orderLine);
-		}
-		if (orderLine.getOrder() == null) {
-			orderLine.setOrder(this);
+		if (!products.contains(orderLine)) {
+			products.add(orderLine);
+			product.getOrders().add(orderLine);
 		}
 	}
 

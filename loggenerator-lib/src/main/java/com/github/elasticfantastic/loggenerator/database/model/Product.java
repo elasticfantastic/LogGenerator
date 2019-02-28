@@ -21,7 +21,7 @@ public class Product {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "articleNbr")
+	@Column(name = "productNbr")
 	private int nbr;
 
 	@Column(name = "productName")
@@ -30,12 +30,12 @@ public class Product {
 	@Column(name = "price")
 	private double price;
 
-	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
-			CascadeType.REMOVE }, fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true)
-	private Collection<OrderLine> orderLines;
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true)
+	private Collection<OrderLine> orders;
 
 	public Product() {
-		this.orderLines = new ArrayList<>();
+		this.nbr = Integer.MIN_VALUE;
+		this.orders = new ArrayList<>();
 	}
 
 	public Product(String name) {
@@ -67,21 +67,8 @@ public class Product {
 		this.price = price;
 	}
 
-	public Collection<OrderLine> getOrderLines() {
-		return orderLines;
-	}
-
-	public void setOrderLines(Collection<OrderLine> orderLines) {
-		this.orderLines = orderLines;
-	}
-
-	public void addOrderLine(OrderLine orderLine) {
-		if (!orderLines.contains(orderLine)) {
-			orderLines.add(orderLine);
-		}
-		if (orderLine.getProduct() == null) {
-			orderLine.setProduct(this);
-		}
+	public Collection<OrderLine> getOrders() {
+		return orders;
 	}
 
 	@Override

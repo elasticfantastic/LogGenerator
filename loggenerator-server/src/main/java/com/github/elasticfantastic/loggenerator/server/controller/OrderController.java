@@ -109,22 +109,22 @@ public class OrderController {
 		String ssn = "16081216-2816";
 		Customer customer = customerService.findById(ssn);
 		
-		System.out.println(customer.toString());
-		System.out.println(customer.getOrders().size());
-		
-		List<Product> products = new ArrayList<>(productService.findAll());
-		List<Product> randomizedProducts = CollectionUtility.getRandom(products, 4);
-		
-		Order order = new Order(LocalDateTime.now());
-		
-		Random random = new Random();
-		
-		for (Product p : randomizedProducts) {
-			OrderLine orderLine = new OrderLine(order, p, random.nextInt(3) + 1);
-			order.addOrderLine(orderLine);
-		}
-		
-		customer.addOrder(order);
+//		System.out.println(customer.toString());
+//		System.out.println(customer.getOrders().size());
+//		
+//		List<Product> products = new ArrayList<>(productService.findAll());
+//		List<Product> randomizedProducts = CollectionUtility.getRandom(products, 4);
+//		
+//		Order order = new Order(LocalDateTime.now());
+//		
+//		Random random = new Random();
+//		
+//		for (Product p : randomizedProducts) {
+//			OrderLine orderLine = new OrderLine(order, p, random.nextInt(3) + 1);
+//			order.addOrderLine(orderLine);
+//		}
+//		
+//		customer.addOrder(order);
 		
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}

@@ -1,4 +1,4 @@
-package com.github.elasticfantastic.loggenerator;
+package com.github.elasticfantastic.loggenerator.test;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.elasticfantastic.loggenerator.LogGenerator;
+import com.github.elasticfantastic.loggenerator.LogRow;
+
 public class GenerateLog {
 
 	public static void main(String[] args) throws IOException {
@@ -21,7 +24,7 @@ public class GenerateLog {
 		
 		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
 
-		int iterations = 250000;
+		int iterations = 50000;
 		for (int i = 0; i < iterations; i++) {
 			LogGenerator generator = new LogGenerator();
 

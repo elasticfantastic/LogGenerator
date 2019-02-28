@@ -9,6 +9,8 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
 import com.github.elasticfantastic.loggenerator.database.model.Customer;
+import com.github.elasticfantastic.loggenerator.database.model.Order;
+import com.github.elasticfantastic.loggenerator.database.model.OrderLine;
 
 public class CustomerService implements ICustomerService {
 
@@ -17,7 +19,7 @@ public class CustomerService implements ICustomerService {
 	public CustomerService() {
 		this.entityManagerFactory = Persistence.createEntityManagerFactory("ElasticFantasticDS");
 	}
-	
+
 	@Override
 	public Customer findById(String ssn) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -30,7 +32,7 @@ public class CustomerService implements ICustomerService {
 		TypedQuery<Customer> tq = entityManager.createNamedQuery("Customer.findAll", Customer.class);
 		return tq.getResultList();
 	}
-	
+
 	@Override
 	public Collection<String> findAllSsns() {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -43,8 +45,14 @@ public class CustomerService implements ICustomerService {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		
 		EntityTransaction transaction = entityManager.getTransaction();
-		
 		transaction.begin();
+		
+		for (Order order : customer.getOrders()) {
+			if (order.getNbr() < 0) {
+				entityManager.persist(order);
+			}
+		}
+		
 		entityManager.merge(customer);
 		transaction.commit();
 		

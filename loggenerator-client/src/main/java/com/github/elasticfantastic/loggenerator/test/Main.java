@@ -27,6 +27,7 @@ public class Main {
 
 	public Main() {
 		this.customerService = new CustomerService();
+		this.orderService = new OrderService();
 		this.productService = new ProductService();
 	}
 
@@ -40,24 +41,32 @@ public class Main {
 		System.out.println("O: " + customer.getOrders().size());
 
 		List<Product> products = new ArrayList<>(productService.findAll());
-		List<Product> randomizedProducts = CollectionUtility.getRandom(products, random.nextInt(3) + 1);
+		List<Product> randomizedProducts = CollectionUtility.getRandom(products, random.nextInt(4) + 1);
 
 		System.out.println("RP: " + randomizedProducts.size());
 
 		Order order = new Order(LocalDateTime.now());
-
-		for (Product product : randomizedProducts) {
-			OrderLine orderLine = new OrderLine(order, product, random.nextInt(3) + 1);
-			order.addOrderLine(orderLine);
-			System.out.println("COLS: " + order.getOrderLines().size());
-		}
-		System.out.println("OL: " + order.getOrderLines().size());
-
 		customer.addOrder(order);
+		customerService.update(customer);
+		
+		for (Product product : randomizedProducts) {
+			order.addProduct(product, random.nextInt(5) + 1);
+		}
+		
+		customerService.update(customer);
+		
+//		for (Product product : randomizedProducts) {
+//			OrderLine orderLine = new OrderLine(order, product, random.nextInt(3) + 1);
+//			order.addOrderLine(orderLine);
+//			System.out.println("COLS: " + order.getOrderLines().size());
+//		}
+//		System.out.println("OL: " + order.getOrderLines().size());
+
+
 
 		System.out.println("O: " + customer.getOrders().size());
 
-		customerService.update(customer);
+		
 
 		System.out.println("NO: " + customerService.findById(ssn).getOrders().size());
 	}
