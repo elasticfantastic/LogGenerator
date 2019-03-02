@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "OrderLine")
 @IdClass(OrderLineId.class)
@@ -24,6 +26,7 @@ public class OrderLine {
 	@Column(name = "quantity")
 	private int quantity;
 
+	@JsonBackReference
 	@ManyToOne
 	@PrimaryKeyJoinColumn(name = "orderNbr", referencedColumnName = "orderNbr")
 	/*
@@ -36,6 +39,7 @@ public class OrderLine {
 	 */
 	private Order order;
 
+	@JsonBackReference
 	@ManyToOne
 	@PrimaryKeyJoinColumn(name = "productNbr", referencedColumnName = "productNbr")
 	/*

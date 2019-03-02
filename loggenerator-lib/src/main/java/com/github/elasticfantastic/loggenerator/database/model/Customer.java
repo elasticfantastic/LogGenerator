@@ -12,6 +12,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @NamedQuery(name = "Customer.findAll", query = "SELECT c FROM Customer c")
 @NamedQuery(name = "Customer.findAllSsns", query = "SELECT c.ssn FROM Customer c")
@@ -34,6 +36,7 @@ public class Customer {
 	@Column(name = "city")
 	private String city;
 
+	@JsonManagedReference
 	@OneToMany(cascade = { CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH,
 			CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "customer", orphanRemoval = true)
 	private Collection<Order> orders;

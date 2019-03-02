@@ -3,26 +3,29 @@ package com.github.elasticfantastic.loggenerator;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
 
 public class LogGenerator {
-
-	// FIX
-	// private String[] ids = { "Client", "Server", "Middleware" };
-	// private String[] levels = { "ERROR", "INFO", "WARN", "DEBUG" };
 
 	// FIX
 	private Map<String, String[]> messagesMapping = new HashMap<>();
 
 	private String[] idFrequencies;
 	private String[] levelFrequencies;
+
+	private ObjectMapper mapper;
 
 	/**
 	 * <p>
@@ -33,11 +36,15 @@ public class LogGenerator {
 		this.idFrequencies = new String[100];
 		this.levelFrequencies = new String[100];
 
+		this.mapper = new ObjectMapper();
+
 		// FIX
-		messagesMapping.put("ERROR", new String[] { "error1", "error2", "error3" });
-		messagesMapping.put("INFO", new String[] { "info1", "info2", "info3" });
-		messagesMapping.put("WARN", new String[] { "warn1", "warn2", "warn3" });
-		messagesMapping.put("DEBUG", new String[] { "debug1", "debug2", "debug3" });
+		messagesMapping.put("ERROR", new String[] { "Something threw an error", "An error occured", "Fatal crash!" });
+		messagesMapping.put("INFO",
+				new String[] { "Functioning normally", "All systems are GO!", "Showing information to users" });
+		messagesMapping.put("WARN", new String[] { "Unidentified source of radiation", "Temporarily ignoring fan noise",
+				"System is slowing down" });
+		messagesMapping.put("DEBUG", new String[] { "Disk usage is good", "RAM usage is good", "CPU usage is good" });
 	}
 
 	public void setIdFrequency(String id, double frequency) {
@@ -141,11 +148,28 @@ public class LogGenerator {
 		Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
 		Object level = inputs.getOrDefault("level", getRandom(this.levelFrequencies));
 		ZonedDateTime date = getRandom(beginningDate, endingDate, zoneId);
-
+		
 		String[] messages = this.messagesMapping.get(level);
 		Object message = inputs.getOrDefault("message", getRandom(messages));
-
-		return new LogRow(id.toString(), level.toString(), date, message.toString());
+		
+		LogRow logRow = new LogRow(id.toString(), level.toString(), date, message.toString());
+		
+		if (level.equals("WARN") || level.equals("ERROR")) {
+			UUID uuid = UUID.randomUUID();
+			
+			ObjectNode rootNode = mapper.createObjectNode();
+			
+			rootNode.put("message", message.toString());
+			rootNode.put("reference", uuid.toString());
+			
+			try {
+				String json = mapper.writeValueAsString(rootNode);
+				logRow.setPayload(Base64.getEncoder().encodeToString(json.getBytes()));
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		}
+		return logRow;
 	}
 
 	private static String getRandom(String[] arr) {

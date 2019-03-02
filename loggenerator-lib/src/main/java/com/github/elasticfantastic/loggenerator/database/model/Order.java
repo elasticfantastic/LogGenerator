@@ -3,6 +3,7 @@ package com.github.elasticfantastic.loggenerator.database.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.DoubleStream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +17,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o")
@@ -31,10 +35,12 @@ public class Order {
 	@Column(name = "time")
 	private LocalDateTime time;
 
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "customerSSN", referencedColumnName = "ssn", nullable = false)
 	private Customer customer;
 
+	@JsonManagedReference
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
 	private Collection<OrderLine> products;
 
@@ -91,6 +97,10 @@ public class Order {
 			products.add(orderLine);
 			product.getOrders().add(orderLine);
 		}
+	}
+	
+	public double getTotalPrice() {
+		return products.stream().flatMapToDouble(x -> DoubleStream.of(x.getProduct().getPrice())).sum();
 	}
 
 	@Override

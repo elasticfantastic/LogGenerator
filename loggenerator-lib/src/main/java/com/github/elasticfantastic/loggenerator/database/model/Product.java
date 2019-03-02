@@ -14,6 +14,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @NamedQuery(name = "Product.findAll", query = "SELECT p FROM Product p")
 @Table(name = "Product")
@@ -30,7 +32,8 @@ public class Product {
 	@Column(name = "price")
 	private double price;
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "product", orphanRemoval = true)
+	@JsonManagedReference
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "product", orphanRemoval = true)
 	private Collection<OrderLine> orders;
 
 	public Product() {

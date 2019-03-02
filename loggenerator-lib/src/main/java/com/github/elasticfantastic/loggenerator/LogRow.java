@@ -2,12 +2,14 @@ package com.github.elasticfantastic.loggenerator;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 
 public class LogRow implements Comparable<LogRow> {
 
 	private String id;
 	private String level;
 	private ZonedDateTime date;
+	private String payload;
 	private String message;
 
 	public LogRow(String id, String level, ZonedDateTime date, String message) {
@@ -15,6 +17,10 @@ public class LogRow implements Comparable<LogRow> {
 		this.level = level;
 		this.date = date;
 		this.message = message;
+
+		// Default payload is the message in a JSON object (base 64 encoded)
+		String json = "{\"message\" : \"" + this.message + "\"}";
+		this.payload = Base64.getEncoder().encodeToString(json.getBytes());
 	}
 
 	public String getId() {
@@ -41,6 +47,14 @@ public class LogRow implements Comparable<LogRow> {
 		this.date = date;
 	}
 
+	public String getPayload() {
+		return payload;
+	}
+
+	public void setPayload(String payload) {
+		this.payload = payload;
+	}
+
 	public String getMessage() {
 		return this.message;
 	}
@@ -51,10 +65,10 @@ public class LogRow implements Comparable<LogRow> {
 
 	@Override
 	public String toString() {
-		//System.out.println(date);
+		// System.out.println(date);
 		String dateAsString = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(this.date);
-		//System.out.println(dateAsString);
-		return String.format("[%s] [%s] [%s] - %s", this.id, this.level, dateAsString, this.message);
+		// System.out.println(dateAsString);
+		return String.format("[%s] [%s] [%s] [%s] - %s", this.id, this.level, dateAsString, this.payload, this.message);
 	}
 
 	@Override
