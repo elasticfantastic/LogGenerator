@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.github.elasticfantastic.loggenerator.database.service.ProductService;
 import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
 import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
 import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
+import com.github.elasticfantastic.loggenerator.utility.DatabaseUtility;
+import com.github.elasticfantastic.loggenerator.utility.JsonUtility;
 import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
 import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
@@ -39,21 +42,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
-	private CustomerService customerService;
-	private OrderService orderService;
-	private ProductService productService;
+	private DatabaseUtility dbUtility;
 
 	private LogGenerator generator;
 
 	public OrderController() {
-		this.customerService = new CustomerService();
-		this.productService = new ProductService();
+		this.dbUtility = new DatabaseUtility();
 
 		this.generator = new LogGenerator();
 
-		this.generator.setLevelFrequency("ERROR", 0.10);
+		this.generator.setLevelFrequency("ERROR", 0.01);
 		this.generator.setLevelFrequency("WARN", 0.10);
-		this.generator.setLevelFrequency("INFO", 0.25);
+		this.generator.setLevelFrequency("INFO", 0.34);
 		this.generator.setLevelFrequency("DEBUG", 0.55);
 
 		Runnable r = new ThreadTest(generator);
@@ -61,16 +61,15 @@ public class OrderController {
 		t.start();
 	}
 
-	@RequestMapping(value = "/order", method = RequestMethod.POST)
-	public ResponseEntity<Object> order(@RequestParam("user") String user, HttpServletRequest request)
-			throws IOException {
+	@RequestMapping(value = "/hello", method = RequestMethod.POST)
+	public ResponseEntity<Object> order(HttpServletRequest request) throws IOException {
 		String logFile = ParameterContainer.getParameter("logFile");
 
 		// Generate request output
 		Map<String, Object> inputs = new HashMap<>();
 		inputs.put("id", "Server1");
 		inputs.put("level", "INFO");
-		inputs.put("message", "Received order request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
+		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
@@ -81,55 +80,51 @@ public class OrderController {
 		// Generate response output
 		inputs = new HashMap<>();
 		inputs.put("id", "Server1");
-
-		String level = this.generator.getRandomLevel("INFO", "ERROR");
-		String message = MessageUtility.getMessage(level, user);
-
-		inputs.put("level", level);
-		inputs.put("message", message);
-
+		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
 
-			return new ResponseEntity<>(logRow.getMessage(), getStatus(level));
+			return new ResponseEntity<>(logRow.getMessage(), getStatus(logRow.getLevel()));
 		}
 	}
 
 	@RequestMapping(value = "/order/add", method = RequestMethod.POST)
-	public ResponseEntity<Object> addOrder(@RequestParam("user") String user, HttpServletRequest request)
-			throws IOException {
+	public ResponseEntity<Object> addOrder(HttpServletRequest request) throws IOException {
 		String logFile = ParameterContainer.getParameter("logFile");
 
 		// Generate request output
-		// String ssn = CollectionUtility.getRandom(customerService.findAll());
-		Customer customer = CollectionUtility.getRandom(customerService.findAll());
 
-		Random random = new Random();
+		String messageRequest = "Received order request from " + request.getRemoteAddr() + ":"
+				+ request.getRemotePort();
+		LogRow logRowRequest = new LogRow("Server1", "INFO", ZonedDateTime.now(), messageRequest);
 
-		// String ssn = "16081216-2816";
-		// Customer customer = customerService.findById(ssn);
-
-//		System.out.println(customer.toString());
-//		System.out.println("O: " + customer.getOrders().size());
-
-		List<Product> products = new ArrayList<>(productService.findAll());
-		List<Product> randomizedProducts = CollectionUtility.getRandom(products, random.nextInt(4) + 1);
-
-		// System.out.println("RP: " + randomizedProducts.size());
-
-		Order order = new Order(LocalDateTime.now());
-		customer.addOrder(order);
-		customerService.update(customer);
-
-		for (Product product : randomizedProducts) {
-			order.addProduct(product, random.nextInt(5) + 1);
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+			System.out.println(logRowRequest);
+			bw.write(logRowRequest + System.getProperty("line.separator"));
 		}
 
-		customerService.update(customer);
-		
-		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+		// Generate response output
+
+		// Do the database stuff
+		Order order = dbUtility.placeRandomOrder(LocalDateTime.now());
+		double orderPrice = order.getTotalPrice();
+
+		// Modify log row contents
+		String orderAsJson = JsonUtility.toJson(order);
+		String customerName = order.getCustomer().getName();
+
+		String messageResponse = "Customer " + customerName + " placed an order worth " + orderPrice;
+		LogRow logRowResponse = new LogRow("Server1", "INFO", ZonedDateTime.now(), messageResponse);
+		logRowResponse.setPayload(Base64.getEncoder().encodeToString(orderAsJson.getBytes()));
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+			System.out.println(logRowResponse);
+			bw.write(logRowResponse + System.getProperty("line.separator"));
+			return new ResponseEntity<>("Order for " + customerName + " was placed",
+					getStatus(logRowResponse.getLevel()));
+		}
 	}
 
 	public HttpStatus getStatus(String level) {

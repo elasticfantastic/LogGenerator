@@ -19,7 +19,7 @@ public class LogRow implements Comparable<LogRow> {
 		this.message = message;
 
 		// Default payload is the message in a JSON object (base 64 encoded)
-		String json = "{\"message\" : \"" + this.message + "\"}";
+		String json = "{\"text\" : \"" + this.message + "\"}";
 		this.payload = Base64.getEncoder().encodeToString(json.getBytes());
 	}
 
@@ -65,9 +65,7 @@ public class LogRow implements Comparable<LogRow> {
 
 	@Override
 	public String toString() {
-		// System.out.println(date);
 		String dateAsString = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(this.date);
-		// System.out.println(dateAsString);
 		return String.format("[%s] [%s] [%s] [%s] - %s", this.id, this.level, dateAsString, this.payload, this.message);
 	}
 

@@ -28,16 +28,16 @@ import com.github.elasticfantastic.loggenerator.database.service.CustomerService
 import com.github.elasticfantastic.loggenerator.database.service.OrderService;
 import com.github.elasticfantastic.loggenerator.database.service.ProductService;
 import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
+import com.github.elasticfantastic.loggenerator.utility.DatabaseUtility;
+import com.github.elasticfantastic.loggenerator.utility.JsonUtility;
 import com.github.elasticfantastic.loggenerator.utility.SqlBuilder;
 
 public class GenerateLog {
 
-	private CustomerService customerService;
-	private ProductService productService;
+	private DatabaseUtility dbUtility;
 
 	public GenerateLog() {
-		this.customerService = new CustomerService();
-		this.productService = new ProductService();
+		this.dbUtility = new DatabaseUtility();
 	}
 
 	public void run() throws IOException {
@@ -110,43 +110,24 @@ public class GenerateLog {
 		}
 
 		Collections.sort(logs);
-		
-		List<Product> products = new ArrayList<>(productService.findAll());
+
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("orders.sql"))) {
-			bw.write("SET IDENTITY_INSERT Orderr ON"  + System.getProperty("line.separator"));
+			bw.write("SET IDENTITY_INSERT Orderr ON" + System.getProperty("line.separator"));
 			int i = 0;
 			for (LogRow log : logs) {
 				// Every fourth INFO log is an order
 				if (log.getLevel().equals("INFO") && i % 4 == 0) {
 					// Do the database stuff
-					Customer customer = CollectionUtility.getRandom(customerService.findAll());
-
-					Random random = new Random();
-
-					List<Product> randomizedProducts = CollectionUtility.getRandom(products, random.nextInt(3) + 1);
-
-					Order order = new Order(log.getDate().toLocalDateTime());
-					customer.addOrder(order);
-					customerService.update(customer);
-
-					for (Product product : randomizedProducts) {
-						order.addProduct(product, random.nextInt(3) + 1);
-					}
-
+					Order order = dbUtility.placeRandomOrder(log.getDate().toLocalDateTime());
 					double orderPrice = order.getTotalPrice();
 
-					customerService.update(customer);
-
 					// Modify log row contents
-					ObjectMapper mapper = new ObjectMapper();
-					mapper.registerModule(new JavaTimeModule());
-					mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+					String orderAsJson = JsonUtility.toJson(order);
+					String customerName = order.getCustomer().getName();
 
-					String orderAsJson = mapper.writeValueAsString(order);
-
-					log.setMessage("Customer " + customer.getName() + " placed an order worth " + orderPrice);
+					log.setMessage("Customer " + customerName + " placed an order worth " + orderPrice);
 					log.setPayload(Base64.getEncoder().encodeToString(orderAsJson.getBytes()));
-					
+
 					Collection<String> sqlStatements = SqlBuilder.buildOrder(order);
 					for (String statement : sqlStatements) {
 						bw.write(statement + System.getProperty("line.separator"));
@@ -155,7 +136,7 @@ public class GenerateLog {
 					i++;
 				}
 			}
-			bw.write("SET IDENTITY_INSERT Orderr OFF"  + System.getProperty("line.separator"));
+			bw.write("SET IDENTITY_INSERT Orderr OFF" + System.getProperty("line.separator"));
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("log.txt"))) {

@@ -30,7 +30,6 @@ public class ThreadTest implements Runnable {
 			Map<String, Object> inputs = new HashMap<>();
 			inputs.put("id", "Server1");
 			inputs.put("level", level);
-			inputs.put("message", MessageUtility.getMessage(level, null));
 
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 				LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
@@ -42,7 +41,7 @@ public class ThreadTest implements Runnable {
 			}
 			
 			try {
-				Thread.sleep(4007);
+				Thread.sleep(10423);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

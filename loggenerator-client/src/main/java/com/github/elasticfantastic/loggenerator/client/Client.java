@@ -26,11 +26,11 @@ public class Client {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
 		
-		String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
+		// String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
 
 		String logFile = "log_client1.txt";
 		String host = "http://localhost:8080/order/add";
-		int millisToSleep = 2011;
+		int millisToSleep = 6087;
 		if (args.length >= 1) {
 			System.out.println(args[0]);
 			logFile = (args[0] != null ? args[0] : logFile);
@@ -42,13 +42,22 @@ public class Client {
 			millisToSleep = (args[2] != null ? Integer.valueOf(args[2]) : millisToSleep);
 		}
 			
+		int i = 0;
 		while (true) {
 			// Generate request output
 			Map<String, Object> inputs = new HashMap<>();
 			inputs.put("id", "Client1");
 			inputs.put("level", "INFO");
-			inputs.put("message", "Sending order request to " + host);
-
+			
+			// Every 4th request is an order request
+			if (i % 4 == 0) {
+				host = "http://localhost:8080/order/add";
+				inputs.put("message", "Sending request to " + host);
+			} else {
+				host = "http://localhost:8080/hello";
+				inputs.put("message", "Sending order request to " + host);
+			}
+			
 			LogGenerator generator = new LogGenerator();
 
 //            generator.setLevelFrequency("ERROR", 0.05);
@@ -69,11 +78,11 @@ public class Client {
 			http.setDoOutput(true);
 			http.setDoInput(true);
 
-			String urlParameters = "user=" + ArrayUtility.getRandom(users);
-			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-			try (DataOutputStream wr = new DataOutputStream(http.getOutputStream())) {
-				wr.write(postData);
-			}
+//			String urlParameters = "user=" + ArrayUtility.getRandom(users);
+//			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+//			try (DataOutputStream wr = new DataOutputStream(http.getOutputStream())) {
+//				wr.write(postData);
+//			}
 
 			String result = null;
 			String level = null;
@@ -107,6 +116,8 @@ public class Client {
 			}
 
 			Thread.sleep(millisToSleep);
+
+			i++;
 		}
 	}
 
