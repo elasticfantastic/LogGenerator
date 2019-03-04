@@ -159,7 +159,7 @@ public class LogGenerator {
 			
 			ObjectNode rootNode = mapper.createObjectNode();
 			
-			rootNode.put("message", message.toString());
+			rootNode.put("text", message.toString());
 			rootNode.put("reference", uuid.toString());
 			
 			try {
