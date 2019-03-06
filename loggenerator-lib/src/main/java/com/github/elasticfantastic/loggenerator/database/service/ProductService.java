@@ -16,18 +16,18 @@ public class ProductService implements IProductService {
 	public ProductService() {
 		this.entityManagerFactory = Persistence.createEntityManagerFactory("ElasticFantasticDS");
 	}
-	
+
 	@Override
 	public Product findById(String nbr) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		return entityManager.find(Product.class, nbr);
 	}
-	
+
 	@Override
 	public Collection<Product> findAll() {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		TypedQuery<Product> tq = entityManager.createNamedQuery("Product.findAll", Product.class);
 		return tq.getResultList();
 	}
-	
+
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.DoubleStream;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -80,7 +79,7 @@ public class Order {
 			customer.addOrder(this);
 		}
 	}
-	
+
 	public Collection<OrderLine> getProducts() {
 		return products;
 	}
@@ -98,7 +97,7 @@ public class Order {
 			product.getOrders().add(orderLine);
 		}
 	}
-	
+
 	public double getTotalPrice() {
 		return products.stream().flatMapToDouble(x -> DoubleStream.of(x.getProduct().getPrice())).sum();
 	}

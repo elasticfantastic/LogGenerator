@@ -8,5 +8,5 @@ public class ArrayUtility {
 		int rnd = new Random().nextInt(arr.length);
 		return arr[rnd];
 	}
-	
+
 }

@@ -3,6 +3,7 @@ package com.github.elasticfantastic.loggenerator;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Base64.Encoder;
 
 public class LogRow implements Comparable<LogRow> {
 
@@ -12,7 +13,14 @@ public class LogRow implements Comparable<LogRow> {
 	private String payload;
 	private String message;
 
+	private Encoder encoder;
+
+	private LogRow() {
+		this.encoder = Base64.getEncoder();
+	}
+
 	public LogRow(String id, String level, ZonedDateTime date, String message) {
+		this();
 		this.id = id;
 		this.level = level;
 		this.date = date;
@@ -20,7 +28,7 @@ public class LogRow implements Comparable<LogRow> {
 
 		// Default payload is the message in a JSON object (base 64 encoded)
 		String json = "{\"text\" : \"" + this.message + "\"}";
-		this.payload = Base64.getEncoder().encodeToString(json.getBytes());
+		this.payload = this.encoder.encodeToString(json.getBytes());
 	}
 
 	public String getId() {

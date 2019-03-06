@@ -10,7 +10,6 @@ import javax.persistence.TypedQuery;
 
 import com.github.elasticfantastic.loggenerator.database.model.Customer;
 import com.github.elasticfantastic.loggenerator.database.model.Order;
-import com.github.elasticfantastic.loggenerator.database.model.OrderLine;
 
 public class CustomerService implements ICustomerService {
 
@@ -43,19 +42,19 @@ public class CustomerService implements ICustomerService {
 	@Override
 	public Customer update(Customer customer) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		
+
 		EntityTransaction transaction = entityManager.getTransaction();
 		transaction.begin();
-		
+
 		for (Order order : customer.getOrders()) {
 			if (order.getNbr() < 0) {
 				entityManager.persist(order);
 			}
 		}
-		
+
 		entityManager.merge(customer);
 		transaction.commit();
-		
+
 		return customer;
 	}
 

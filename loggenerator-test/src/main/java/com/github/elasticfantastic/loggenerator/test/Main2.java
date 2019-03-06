@@ -1,6 +1,5 @@
 package com.github.elasticfantastic.loggenerator.test;
 
-import java.awt.font.GraphicAttribute;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +15,12 @@ import com.github.elasticfantastic.loggenerator.database.model.Customer;
 import com.github.elasticfantastic.loggenerator.database.model.Order;
 import com.github.elasticfantastic.loggenerator.database.model.Product;
 import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
-import com.github.elasticfantastic.loggenerator.database.service.OrderService;
 import com.github.elasticfantastic.loggenerator.database.service.ProductService;
 import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
 
 public class Main2 {
 
 	private CustomerService customerService;
-	private OrderService orderService;
 	private ProductService productService;
 
 	public static void main(String[] args) throws Exception {
@@ -33,7 +30,6 @@ public class Main2 {
 
 	public Main2() {
 		this.customerService = new CustomerService();
-		this.orderService = new OrderService();
 		this.productService = new ProductService();
 	}
 

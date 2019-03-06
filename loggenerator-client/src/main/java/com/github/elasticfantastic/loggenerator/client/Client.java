@@ -1,121 +1,72 @@
 package com.github.elasticfantastic.loggenerator.client;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.github.elasticfantastic.loggenerator.LogGenerator;
 import com.github.elasticfantastic.loggenerator.LogRow;
-import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
+import com.github.elasticfantastic.loggenerator.client.http.HttpRequester;
+import com.github.elasticfantastic.loggenerator.client.http.HttpUtility;
 
 public class Client {
 
-	//private static final String LOG_FILE = "log_client1.txt";
+	private String logFile;
+	private String host;
+	private int millisToSleep;
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
-		
-		// String[] users = { "Anna", "Bob", "Eve", "Charlie", "Victor", "Samantha" };
+	public Client(String logFile, String host, int millisToSleep) {
+		this.logFile = logFile;
+		this.host = host;
+		this.millisToSleep = millisToSleep;
+	}
 
-		String logFile = "log_client1.txt";
-		String host = "http://localhost:8080/order/add";
-		int millisToSleep = 6087;
-		if (args.length >= 1) {
-			System.out.println(args[0]);
-			logFile = (args[0] != null ? args[0] : logFile);
-		}
-		if (args.length >= 2) {
-			host = (args[1] != null ? args[1] : host);
-		}
-		if (args.length >= 3) {
-			millisToSleep = (args[2] != null ? Integer.valueOf(args[2]) : millisToSleep);
-		}
-			
+	public void run() throws IOException, InterruptedException {
 		int i = 0;
 		while (true) {
-			// Generate request output
-			Map<String, Object> inputs = new HashMap<>();
-			inputs.put("id", "Client1");
-			inputs.put("level", "INFO");
-			
+			String id = "Client1";
+			String level = "INFO";
+			String message = "";
+
+			String method = "POST";
+
 			// Every 4th request is an order request
 			if (i % 4 == 0) {
-				host = "http://localhost:8080/order/add";
-				inputs.put("message", "Sending request to " + host);
+				this.host = "http://localhost:8080/order";
+				method = "POST";
+				message = "Sending order request to " + host + ", method: " + method;
 			} else {
-				host = "http://localhost:8080/hello";
-				inputs.put("message", "Sending order request to " + host);
+				this.host = "http://localhost:8080/hello";
+				method = "GET";
+				message = "Sending request to " + host + ", method: " + method;
 			}
-			
-			LogGenerator generator = new LogGenerator();
 
-//            generator.setLevelFrequency("ERROR", 0.05);
-//            generator.setLevelFrequency("WARN", 0.10);
-//            generator.setLevelFrequency("INFO", 0.30);
-//            generator.setLevelFrequency("DEBUG", 0.55);
+			// LogGenerator generator = new LogGenerator();
 
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-				LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId, inputs);
+			// Generate request output
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.logFile, true))) {
+				LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), message);
+				// LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
 			}
 
-			URL url = new URL(host);
-			URLConnection conn = url.openConnection();
-			HttpURLConnection http = (HttpURLConnection) conn;
-			http.setRequestMethod("POST");
-			http.setDoOutput(true);
-			http.setDoInput(true);
-
-//			String urlParameters = "user=" + ArrayUtility.getRandom(users);
-//			byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
-//			try (DataOutputStream wr = new DataOutputStream(http.getOutputStream())) {
-//				wr.write(postData);
-//			}
-
-			String result = null;
-			String level = null;
-			try {
-				BufferedReader br;
-				if (200 <= http.getResponseCode() && http.getResponseCode() <= 299) {
-					level = "INFO";
-					br = new BufferedReader(new InputStreamReader(http.getInputStream()));
-				} else {
-					level = "ERROR";
-					br = new BufferedReader(new InputStreamReader(http.getErrorStream()));
-				}
-				StringBuilder builder = new StringBuilder();
-				String inputLine = "";
-				while ((inputLine = br.readLine()) != null) {
-					builder.append(inputLine);
-				}
-				result = builder.toString();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			HttpRequester requester = new HttpRequester(this.host, method);
+			String responseBody = requester.getResponseBody();
+			int responseCode = requester.getResponseCode();
 
 			// Generate response output
-			inputs.put("level", level);
-			inputs.put("message", result);
+			level = HttpUtility.toLogLevel(responseCode);
+			message = responseBody;
 
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-				LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId, inputs);
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.logFile, true))) {
+				LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), message);
+				// LogRow logRow = generator.getLog(ZonedDateTime.now(), zoneId, inputs);
 				System.out.println(logRow);
 				bw.write(logRow + System.getProperty("line.separator"));
 			}
 
-			Thread.sleep(millisToSleep);
+			Thread.sleep(this.millisToSleep);
 
 			i++;
 		}

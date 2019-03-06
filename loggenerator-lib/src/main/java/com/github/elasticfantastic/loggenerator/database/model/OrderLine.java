@@ -52,9 +52,9 @@ public class OrderLine {
 	 * referencedColumnName = "id")
 	 */
 	private Product product;
-	
+
 	public OrderLine() {
-		
+
 	}
 
 	public long getOrderNbr() {
@@ -101,5 +101,5 @@ public class OrderLine {
 	public String toString() {
 		return "OrderLine2 [orderNbr=" + orderNbr + ", productNbr=" + productNbr + ", quantity=" + quantity + "]";
 	}
-	
+
 }

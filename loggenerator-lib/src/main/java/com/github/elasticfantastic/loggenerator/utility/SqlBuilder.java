@@ -16,7 +16,7 @@ public class SqlBuilder {
 		builder.append("VALUES ");
 		builder.append("(" + order.getNbr() + ", '" + order.getTime() + "', '" + order.getCustomer().getSsn() + "');");
 		sqlStatements.add(builder.toString());
-		
+
 		for (OrderLine line : order.getProducts()) {
 			builder = new StringBuilder();
 			builder.append("INSERT INTO OrderLine (orderNbr, productNbr, quantity) ");

@@ -16,13 +16,13 @@ public class OrderService implements IOrderService {
 	public OrderService() {
 		this.entityManagerFactory = Persistence.createEntityManagerFactory("ElasticFantasticDS");
 	}
-	
+
 	@Override
 	public void add(Order order) {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		entityManager.persist(order);
 	}
-	
+
 	@Override
 	public Collection<Order> findAll() {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -37,5 +37,5 @@ public class OrderService implements IOrderService {
 //		tq.setParameter("ssn", ssn);
 //		return tq.getResultList();
 //	}
-	
+
 }

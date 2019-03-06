@@ -1,10 +1,7 @@
 package com.github.elasticfantastic.loggenerator.test;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 
-import com.github.elasticfantastic.loggenerator.database.model.Customer;
 import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
 
 public class Main {

@@ -148,20 +148,20 @@ public class LogGenerator {
 		Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
 		Object level = inputs.getOrDefault("level", getRandom(this.levelFrequencies));
 		ZonedDateTime date = getRandom(beginningDate, endingDate, zoneId);
-		
+
 		String[] messages = this.messagesMapping.get(level);
 		Object message = inputs.getOrDefault("message", getRandom(messages));
-		
+
 		LogRow logRow = new LogRow(id.toString(), level.toString(), date, message.toString());
-		
+
 		if (level.equals("WARN") || level.equals("ERROR")) {
 			UUID uuid = UUID.randomUUID();
-			
+
 			ObjectNode rootNode = mapper.createObjectNode();
-			
+
 			rootNode.put("text", message.toString());
 			rootNode.put("reference", uuid.toString());
-			
+
 			try {
 				String json = mapper.writeValueAsString(rootNode);
 				logRow.setPayload(Base64.getEncoder().encodeToString(json.getBytes()));

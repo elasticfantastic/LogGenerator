@@ -5,50 +5,39 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
+import java.util.Base64.Encoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-
-import com.github.elasticfantastic.loggenerator.LogGenerator;
-import com.github.elasticfantastic.loggenerator.LogRow;
-import com.github.elasticfantastic.loggenerator.database.model.Customer;
-import com.github.elasticfantastic.loggenerator.database.model.Order;
-import com.github.elasticfantastic.loggenerator.database.model.OrderLine;
-import com.github.elasticfantastic.loggenerator.database.model.Product;
-import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
-import com.github.elasticfantastic.loggenerator.database.service.OrderService;
-import com.github.elasticfantastic.loggenerator.database.service.ProductService;
-import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
-import com.github.elasticfantastic.loggenerator.utility.ArrayUtility;
-import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
-import com.github.elasticfantastic.loggenerator.utility.DatabaseUtility;
-import com.github.elasticfantastic.loggenerator.utility.JsonUtility;
-import com.github.elasticfantastic.loggenerator.utility.MessageUtility;
-import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.github.elasticfantastic.loggenerator.LogGenerator;
+import com.github.elasticfantastic.loggenerator.LogRow;
+import com.github.elasticfantastic.loggenerator.database.model.Order;
+import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
+import com.github.elasticfantastic.loggenerator.utility.DatabaseUtility;
+import com.github.elasticfantastic.loggenerator.utility.JsonUtility;
+import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
 @RestController
 public class OrderController {
 
 	private DatabaseUtility dbUtility;
 
+	private Encoder encoder;
 	private LogGenerator generator;
 
 	public OrderController() {
 		this.dbUtility = new DatabaseUtility();
 
+		this.encoder = Base64.getEncoder();
 		this.generator = new LogGenerator();
 
 		this.generator.setLevelFrequency("ERROR", 0.01);
@@ -61,26 +50,32 @@ public class OrderController {
 		t.start();
 	}
 
-	@RequestMapping(value = "/hello", method = RequestMethod.POST)
+	@RequestMapping(value = "/hello", method = RequestMethod.GET)
 	public ResponseEntity<Object> order(HttpServletRequest request) throws IOException {
 		String logFile = ParameterContainer.getParameter("logFile");
 
 		// Generate request output
-		Map<String, Object> inputs = new HashMap<>();
-		inputs.put("id", "Server1");
-		inputs.put("level", "INFO");
-		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
+
+		// Map<String, Object> inputs = new HashMap<>();
+//		inputs.put("id", "Server1");
+//		inputs.put("level", "INFO");
+//		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
+
+		String id = "Server1";
+		String level = "INFO";
+		String message = "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort();
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
+			// LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
+			LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), message);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
 		}
 
 		// Generate response output
-		inputs = new HashMap<>();
+		Map<String, Object> inputs = new HashMap<>();
 		inputs.put("id", "Server1");
-		
+
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
 			System.out.println(logRow);
@@ -90,7 +85,7 @@ public class OrderController {
 		}
 	}
 
-	@RequestMapping(value = "/order/add", method = RequestMethod.POST)
+	@RequestMapping(value = "/order", method = RequestMethod.POST)
 	public ResponseEntity<Object> addOrder(HttpServletRequest request) throws IOException {
 		String logFile = ParameterContainer.getParameter("logFile");
 
@@ -117,7 +112,7 @@ public class OrderController {
 
 		String messageResponse = "Customer " + customerName + " placed an order worth " + orderPrice;
 		LogRow logRowResponse = new LogRow("Server1", "INFO", ZonedDateTime.now(), messageResponse);
-		logRowResponse.setPayload(Base64.getEncoder().encodeToString(orderAsJson.getBytes()));
+		logRowResponse.setPayload(this.encoder.encodeToString(orderAsJson.getBytes()));
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			System.out.println(logRowResponse);

@@ -7,9 +7,9 @@ import com.github.elasticfantastic.loggenerator.database.model.Product;
 public interface IProductService {
 
 	Product findById(String nbr);
-	
+
 	Collection<Product> findAll();
-	
+
 	// Product update(Customer customer);
-	
+
 }
