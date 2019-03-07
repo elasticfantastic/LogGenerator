@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @NamedQuery(name = "Order.findAll", query = "SELECT o FROM Order o")
-//@NamedQuery(name = "Order.findBySsn", query = "SELECT o FROM Order o WHERE o.customer.ssn = :ssn")
 @Table(name = "Orderr")
 public class Order {
 

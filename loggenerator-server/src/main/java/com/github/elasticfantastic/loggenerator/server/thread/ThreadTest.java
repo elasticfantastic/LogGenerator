@@ -40,7 +40,7 @@ public class ThreadTest implements Runnable {
 			}
 
 			try {
-				Thread.sleep(10423);
+				Thread.sleep(9423);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

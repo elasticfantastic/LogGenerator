@@ -7,7 +7,6 @@
     <class>com.github.elasticfantastic.loggenerator.database.model.Customer</class>
     <class>com.github.elasticfantastic.loggenerator.database.model.Order</class>
     <class>com.github.elasticfantastic.loggenerator.database.model.OrderLine</class>
-    <class>com.github.elasticfantastic.loggenerator.database.model.OrderLine2</class>
     <class>com.github.elasticfantastic.loggenerator.database.model.Product</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />

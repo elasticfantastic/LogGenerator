@@ -31,7 +31,6 @@ public class GenerateLog {
 	}
 
 	public void run() throws IOException {
-		// LocalDateTime endingDate2 = LocalDateTime.of(2018, 01, 01, 23, 59, 59);
 		List<LogRow> logs = new ArrayList<>();
 
 		ZoneId zoneId = ZoneId.of("Europe/Stockholm");
@@ -101,10 +100,17 @@ public class GenerateLog {
 
 		Collections.sort(logs);
 
+		int currentLogIndex = 1;
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("orders.sql"))) {
+			bw.write("DELETE FROM OrderLine" + System.getProperty("line.separator"));
+			bw.write("DELETE FROM Orderr" + System.getProperty("line.separator"));
+			bw.write("DBCC checkident ('Orderr', reseed, 1)" + System.getProperty("line.separator"));
 			bw.write("SET IDENTITY_INSERT Orderr ON" + System.getProperty("line.separator"));
 			int i = 0;
 			for (LogRow log : logs) {
+				if (currentLogIndex % 10000 == 0) {
+					System.out.println("Processing log " + currentLogIndex + "...");
+				}
 				// Every fourth INFO log is an order
 				if (log.getLevel().equals("INFO") && i % 4 == 0) {
 					// Do the database stuff
@@ -125,6 +131,7 @@ public class GenerateLog {
 				} else {
 					i++;
 				}
+				currentLogIndex++;
 			}
 			bw.write("SET IDENTITY_INSERT Orderr OFF" + System.getProperty("line.separator"));
 		}

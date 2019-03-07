@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class ArrayUtility {
 
-	public static String getRandom(String[] arr) {
+	public static <E> E getRandom(E[] arr) {
 		int rnd = new Random().nextInt(arr.length);
 		return arr[rnd];
 	}

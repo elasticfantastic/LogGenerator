@@ -7,7 +7,7 @@ public class Main {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		String logFile = "log_client1.txt";
 		String host = "http://localhost:8080/order";
-		int millisToSleep = 6087;
+		int millisToSleep = 5087;
 		if (args.length >= 1) {
 			System.out.println(args[0]);
 			logFile = (args[0] != null ? args[0] : logFile);
