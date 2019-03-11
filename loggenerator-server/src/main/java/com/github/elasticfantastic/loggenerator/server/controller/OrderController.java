@@ -29,106 +29,99 @@ import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 @RestController
 public class OrderController {
 
-	private DatabaseUtility dbUtility;
+    private DatabaseUtility dbUtility;
 
-	private Encoder encoder;
-	private LogGenerator generator;
+    private Encoder encoder;
+    private LogGenerator generator;
 
-	public OrderController() {
-		this.dbUtility = new DatabaseUtility();
+    public OrderController() {
+        this.dbUtility = new DatabaseUtility();
 
-		this.encoder = Base64.getEncoder();
-		this.generator = new LogGenerator();
+        this.encoder = Base64.getEncoder();
+        this.generator = new LogGenerator();
 
-		this.generator.setLevelFrequency("ERROR", 0.01);
-		this.generator.setLevelFrequency("WARN", 0.10);
-		this.generator.setLevelFrequency("INFO", 0.34);
-		this.generator.setLevelFrequency("DEBUG", 0.55);
+        this.generator.setLevelFrequency("ERROR", 0.01);
+        this.generator.setLevelFrequency("WARN", 0.10);
+        this.generator.setLevelFrequency("INFO", 0.34);
+        this.generator.setLevelFrequency("DEBUG", 0.55);
 
-		Runnable r = new ThreadTest(generator);
-		Thread t = new Thread(r);
-		t.start();
-	}
+        Runnable r = new ThreadTest(generator);
+        Thread t = new Thread(r);
+        t.start();
+    }
 
-	@RequestMapping(value = "/hello", method = RequestMethod.GET)
-	public ResponseEntity<Object> order(HttpServletRequest request) throws IOException {
-		String logFile = ParameterContainer.getParameter("logFile");
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public ResponseEntity<Object> order(HttpServletRequest request) throws IOException {
+        String logFile = ParameterContainer.getParameter("logFile");
+        String id = ParameterContainer.getParameter("id");
 
-		// Generate request output
+        // Generate request output
+        String level = "INFO";
+        String message = "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort();
 
-		// Map<String, Object> inputs = new HashMap<>();
-//		inputs.put("id", "Server1");
-//		inputs.put("level", "INFO");
-//		inputs.put("message", "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort());
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+            LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), message);
+            System.out.println(logRow);
+            bw.write(logRow + System.getProperty("line.separator"));
+        }
 
-		String id = "Server1";
-		String level = "INFO";
-		String message = "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort();
+        // Generate response output
+        Map<String, Object> inputs = new HashMap<>();
+        inputs.put("id", id);
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			// LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
-			LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), message);
-			System.out.println(logRow);
-			bw.write(logRow + System.getProperty("line.separator"));
-		}
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+            LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
+            System.out.println(logRow);
+            bw.write(logRow + System.getProperty("line.separator"));
 
-		// Generate response output
-		Map<String, Object> inputs = new HashMap<>();
-		inputs.put("id", "Server1");
+            return new ResponseEntity<>(logRow.getMessage(), getStatus(logRow.getLevel()));
+        }
+    }
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
-			System.out.println(logRow);
-			bw.write(logRow + System.getProperty("line.separator"));
+    @RequestMapping(value = "/order", method = RequestMethod.POST)
+    public ResponseEntity<Object> addOrder(HttpServletRequest request) throws IOException {
+        String logFile = ParameterContainer.getParameter("logFile");
+        String id = ParameterContainer.getParameter("id");
 
-			return new ResponseEntity<>(logRow.getMessage(), getStatus(logRow.getLevel()));
-		}
-	}
+        // Generate request output
+        String messageRequest = "Received order request from " + request.getRemoteAddr() + ":"
+                + request.getRemotePort();
+        LogRow logRowRequest = new LogRow(id, "INFO", ZonedDateTime.now(), messageRequest);
 
-	@RequestMapping(value = "/order", method = RequestMethod.POST)
-	public ResponseEntity<Object> addOrder(HttpServletRequest request) throws IOException {
-		String logFile = ParameterContainer.getParameter("logFile");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+            System.out.println(logRowRequest);
+            bw.write(logRowRequest + System.getProperty("line.separator"));
+        }
 
-		// Generate request output
+        // Generate response output
 
-		String messageRequest = "Received order request from " + request.getRemoteAddr() + ":"
-				+ request.getRemotePort();
-		LogRow logRowRequest = new LogRow("Server1", "INFO", ZonedDateTime.now(), messageRequest);
+        // Do the database stuff
+        Order order = dbUtility.placeRandomOrder(LocalDateTime.now());
+        double orderPrice = order.getTotalPrice();
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			System.out.println(logRowRequest);
-			bw.write(logRowRequest + System.getProperty("line.separator"));
-		}
+        // Modify log row contents
+        String orderAsJson = JsonUtility.toJson(order);
+        String customerName = order.getCustomer().getName();
 
-		// Generate response output
+        String messageResponse = "Customer " + customerName + " placed an order worth " + orderPrice;
+        LogRow logRowResponse = new LogRow(id, "INFO", ZonedDateTime.now(), messageResponse);
+        logRowResponse.setPayload(this.encoder.encodeToString(orderAsJson.getBytes()));
 
-		// Do the database stuff
-		Order order = dbUtility.placeRandomOrder(LocalDateTime.now());
-		double orderPrice = order.getTotalPrice();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+            System.out.println(logRowResponse);
+            bw.write(logRowResponse + System.getProperty("line.separator"));
+            return new ResponseEntity<>("Order for " + customerName + " was placed",
+                    getStatus(logRowResponse.getLevel()));
+        }
+    }
 
-		// Modify log row contents
-		String orderAsJson = JsonUtility.toJson(order);
-		String customerName = order.getCustomer().getName();
-
-		String messageResponse = "Customer " + customerName + " placed an order worth " + orderPrice;
-		LogRow logRowResponse = new LogRow("Server1", "INFO", ZonedDateTime.now(), messageResponse);
-		logRowResponse.setPayload(this.encoder.encodeToString(orderAsJson.getBytes()));
-
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			System.out.println(logRowResponse);
-			bw.write(logRowResponse + System.getProperty("line.separator"));
-			return new ResponseEntity<>("Order for " + customerName + " was placed",
-					getStatus(logRowResponse.getLevel()));
-		}
-	}
-
-	public HttpStatus getStatus(String level) {
-		switch (level) {
-		case "ERROR":
-			return HttpStatus.FORBIDDEN;
-		default:
-			return HttpStatus.OK;
-		}
-	}
+    public HttpStatus getStatus(String level) {
+        switch (level) {
+            case "ERROR":
+                return HttpStatus.FORBIDDEN;
+            default:
+                return HttpStatus.OK;
+        }
+    }
 
 }

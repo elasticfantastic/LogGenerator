@@ -13,39 +13,42 @@ import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
 public class ThreadTest implements Runnable {
 
-	private LogGenerator generator;
+    private LogGenerator generator;
 
-	public ThreadTest(LogGenerator generator) {
-		this.generator = generator;
-	}
+    public ThreadTest(LogGenerator generator) {
+        this.generator = generator;
+    }
 
-	@Override
-	public void run() {
-		while (true) {
-			String logFile = ParameterContainer.getParameter("logFile");
+    @Override
+    public void run() {
+        String logFile = ParameterContainer.getParameter("logFile");
+        while (true) {
+            String level = this.generator.getRandomLevel("WARN", "DEBUG");
 
-			String level = this.generator.getRandomLevel("WARN", "DEBUG");
+            Map<String, Object> inputs = new HashMap<>();
+            inputs.put("id", ParameterContainer.getParameter("id"));
+            inputs.put("level", level);
 
-			Map<String, Object> inputs = new HashMap<>();
-			inputs.put("id", "Server1");
-			inputs.put("level", level);
+            LogRow logRow = null;
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+                logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
+                System.out.println(logRow);
+                bw.write(logRow + System.getProperty("line.separator"));
 
-			try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-				LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
-				System.out.println(logRow);
-				bw.write(logRow + System.getProperty("line.separator"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			try {
-				Thread.sleep(9423);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+                Thread.sleep(9423);
+            } catch (IOException | InterruptedException e) {
+                inputs.put("level", "ERROR");
+                inputs.put("message", e.getMessage());
+                
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+                    logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
+                    System.out.println(logRow);
+                    bw.write(logRow + System.getProperty("line.separator"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+    }
 
 }

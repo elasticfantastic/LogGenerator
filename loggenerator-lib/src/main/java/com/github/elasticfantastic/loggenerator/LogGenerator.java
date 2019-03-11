@@ -131,20 +131,20 @@ public class LogGenerator {
 		return getRandom(arr);
 	}
 
-	public LogRow getLog() {
+	public LogRow getLog() throws JsonProcessingException {
 		return getLog(ZonedDateTime.now(), new HashMap<String, Object>());
 	}
 
-	public LogRow getLog(ZonedDateTime specificDate, Map<String, Object> inputs) {
+	public LogRow getLog(ZonedDateTime specificDate, Map<String, Object> inputs) throws JsonProcessingException {
 		return getLog(specificDate, specificDate, ZoneId.of("Europe/Stockholm"), inputs);
 	}
 
-	public LogRow getLog(ZonedDateTime specificDate, ZoneId zoneId, Map<String, Object> inputs) {
+	public LogRow getLog(ZonedDateTime specificDate, ZoneId zoneId, Map<String, Object> inputs) throws JsonProcessingException {
 		return getLog(specificDate, specificDate, zoneId, inputs);
 	}
 
 	public LogRow getLog(ZonedDateTime beginningDate, ZonedDateTime endingDate, ZoneId zoneId,
-			Map<String, Object> inputs) {
+			Map<String, Object> inputs) throws JsonProcessingException {
 		Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
 		Object level = inputs.getOrDefault("level", getRandom(this.levelFrequencies));
 		ZonedDateTime date = getRandom(beginningDate, endingDate, zoneId);
@@ -162,12 +162,8 @@ public class LogGenerator {
 			rootNode.put("text", message.toString());
 			rootNode.put("reference", uuid.toString());
 
-			try {
-				String json = mapper.writeValueAsString(rootNode);
-				logRow.setPayload(Base64.getEncoder().encodeToString(json.getBytes()));
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-			}
+			String json = mapper.writeValueAsString(rootNode);
+			logRow.setPayload(Base64.getEncoder().encodeToString(json.getBytes()));
 		}
 		return logRow;
 	}
