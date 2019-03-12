@@ -7,8 +7,8 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.elasticfantastic.loggenerator.LogGenerator;
-import com.github.elasticfantastic.loggenerator.LogRow;
+import com.github.elasticfantastic.loggenerator.core.LogGenerator;
+import com.github.elasticfantastic.loggenerator.core.LogRow;
 
 public class Main {
 

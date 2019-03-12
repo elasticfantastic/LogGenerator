@@ -4,10 +4,10 @@
   version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/persistence">
   <persistence-unit name="ElasticFantasticDS">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>com.github.elasticfantastic.loggenerator.database.model.Customer</class>
-    <class>com.github.elasticfantastic.loggenerator.database.model.Order</class>
-    <class>com.github.elasticfantastic.loggenerator.database.model.OrderLine</class>
-    <class>com.github.elasticfantastic.loggenerator.database.model.Product</class>
+    <class>com.github.elasticfantastic.loggenerator.core.database.model.Customer</class>
+    <class>com.github.elasticfantastic.loggenerator.core.database.model.Order</class>
+    <class>com.github.elasticfantastic.loggenerator.core.database.model.OrderLine</class>
+    <class>com.github.elasticfantastic.loggenerator.core.database.model.Product</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
       <property name="javax.persistence.jdbc.url"

@@ -11,12 +11,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.elasticfantastic.loggenerator.database.model.Customer;
-import com.github.elasticfantastic.loggenerator.database.model.Order;
-import com.github.elasticfantastic.loggenerator.database.model.Product;
-import com.github.elasticfantastic.loggenerator.database.service.CustomerService;
-import com.github.elasticfantastic.loggenerator.database.service.ProductService;
-import com.github.elasticfantastic.loggenerator.utility.CollectionUtility;
+import com.github.elasticfantastic.loggenerator.core.database.model.Customer;
+import com.github.elasticfantastic.loggenerator.core.database.model.Order;
+import com.github.elasticfantastic.loggenerator.core.database.model.Product;
+import com.github.elasticfantastic.loggenerator.core.database.service.CustomerService;
+import com.github.elasticfantastic.loggenerator.core.database.service.ProductService;
+import com.github.elasticfantastic.loggenerator.core.utility.CollectionUtility;
 
 public class Main2 {
 

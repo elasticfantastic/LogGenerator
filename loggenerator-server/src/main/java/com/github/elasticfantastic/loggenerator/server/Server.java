@@ -3,9 +3,9 @@ package com.github.elasticfantastic.loggenerator.server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.github.elasticfantastic.loggenerator.LogGenerator;
+import com.github.elasticfantastic.loggenerator.core.LogGenerator;
+import com.github.elasticfantastic.loggenerator.core.utility.ParameterContainer;
 import com.github.elasticfantastic.loggenerator.server.thread.ThreadTest;
-import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
 
 @SpringBootApplication
 public class Server {

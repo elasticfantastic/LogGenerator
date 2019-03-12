@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.elasticfantastic.loggenerator.comparator.Ordering;
-import com.github.elasticfantastic.loggenerator.comparator.ProductPriceComparator;
-import com.github.elasticfantastic.loggenerator.database.model.Product;
-import com.github.elasticfantastic.loggenerator.database.service.ProductService;
+import com.github.elasticfantastic.loggenerator.core.comparator.Ordering;
+import com.github.elasticfantastic.loggenerator.core.comparator.ProductPriceComparator;
+import com.github.elasticfantastic.loggenerator.core.database.model.Product;
+import com.github.elasticfantastic.loggenerator.core.database.service.ProductService;
 
 public class Main {
 	

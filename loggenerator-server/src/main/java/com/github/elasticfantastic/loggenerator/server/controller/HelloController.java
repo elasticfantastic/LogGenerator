@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.elasticfantastic.loggenerator.LogGenerator;
-import com.github.elasticfantastic.loggenerator.LogRow;
-import com.github.elasticfantastic.loggenerator.server.utility.HttpUtility;
-import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
+import com.github.elasticfantastic.loggenerator.core.LogGenerator;
+import com.github.elasticfantastic.loggenerator.core.LogRow;
+import com.github.elasticfantastic.loggenerator.core.utility.ParameterContainer;
+import com.github.elasticfantastic.loggenerator.core.utility.http.HttpUtility;
 
 @RestController
 public class HelloController {
@@ -26,7 +26,7 @@ public class HelloController {
 
 	public HelloController() {
 		this.generator = new LogGenerator();
-		
+
 		this.generator.setLevelFrequency("ERROR", 0.01);
 		this.generator.setLevelFrequency("WARN", 0.10);
 		this.generator.setLevelFrequency("INFO", 0.34);
@@ -40,10 +40,13 @@ public class HelloController {
 
 		// Generate request output
 		String level = "INFO";
-		String message = "Received request from " + request.getRemoteAddr() + ":" + request.getRemotePort();
-
+		
+        String remoteAddress = request.getRemoteAddr();
+        int remotePort = request.getRemotePort();
+        String text = String.format("Received request from %s:%d", remoteAddress, remotePort);
+		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), message);
+			LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), text);
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
 		}
@@ -57,7 +60,7 @@ public class HelloController {
 			System.out.println(logRow);
 			bw.write(logRow + System.getProperty("line.separator"));
 
-			return new ResponseEntity<>(logRow.getMessage(), HttpUtility.getStatus(logRow.getLevel()));
+			return new ResponseEntity<>(logRow.getText(), HttpUtility.toStatus(logRow.getLevel()));
 		}
 	}
 

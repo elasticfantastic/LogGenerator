@@ -7,9 +7,9 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.elasticfantastic.loggenerator.LogGenerator;
-import com.github.elasticfantastic.loggenerator.LogRow;
-import com.github.elasticfantastic.loggenerator.utility.ParameterContainer;
+import com.github.elasticfantastic.loggenerator.core.LogGenerator;
+import com.github.elasticfantastic.loggenerator.core.LogRow;
+import com.github.elasticfantastic.loggenerator.core.utility.ParameterContainer;
 
 public class ThreadTest implements Runnable {
 
