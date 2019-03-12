@@ -47,7 +47,7 @@ public class Main {
 				Map<String, Object> inputs = new HashMap<>();
 				inputs.put("id", id);
 				inputs.put("level", "ERROR");
-				inputs.put("message", e.getMessage());
+				inputs.put("text", e.getMessage());
 
 				try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 					LogRow logRow = generator.getLog(ZonedDateTime.now(), inputs);
