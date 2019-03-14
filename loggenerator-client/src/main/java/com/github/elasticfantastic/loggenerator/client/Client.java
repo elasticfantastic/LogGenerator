@@ -9,6 +9,11 @@ import com.github.elasticfantastic.loggenerator.client.http.HttpRequester;
 import com.github.elasticfantastic.loggenerator.core.LogRow;
 import com.github.elasticfantastic.loggenerator.core.utility.http.HttpUtility;
 
+/**
+ * A client which performs requests to the specified host.
+ * 
+ * @author Daniel Nilsson
+ */
 public class Client {
 
     private String id;
@@ -21,6 +26,16 @@ public class Client {
         this.host = host;
     }
 
+    /**
+     * Do the request for the specified host.
+     * 
+     * @param iteration
+     *            our current iteration
+     * @throws IOException
+     *             if an I/O exception occurred
+     * @throws InterruptedException
+     *             if the thread couldn't sleep
+     */
     public void run(int iteration) throws IOException, InterruptedException {
         String level = "INFO";
         String text = "";

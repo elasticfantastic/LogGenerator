@@ -4,14 +4,36 @@ import java.util.Collection;
 
 import com.github.elasticfantastic.loggenerator.core.database.model.Customer;
 
+/**
+ * Definition for database manipulation methods for customers.
+ * 
+ * @author Daniel Nilsson
+ */
 public interface ICustomerService {
 
-	Customer findById(String ssn);
+    /**
+     * Fetch the customer with the specified social security number.
+     * 
+     * @param ssn
+     *            the social security number
+     * @return the customer
+     */
+    Customer findById(String ssn);
 
-	Collection<Customer> findAll();
+    /**
+     * Fetch all the customers.
+     * 
+     * @return all the customers
+     */
+    Collection<Customer> findAll();
 
-	Collection<String> findAllSsns();
-
-	Customer update(Customer customer);
+    /**
+     * Update a specific customer.
+     * 
+     * @param customer
+     *            the customer to update
+     * @return the updated customer
+     */
+    Customer update(Customer customer);
 
 }

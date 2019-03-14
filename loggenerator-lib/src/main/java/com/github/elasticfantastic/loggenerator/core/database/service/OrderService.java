@@ -30,12 +30,4 @@ public class OrderService implements IOrderService {
 		return tq.getResultList();
 	}
 
-//	@Override
-//	public Collection<Order> findBySsn(String ssn) {
-//		EntityManager entityManager = entityManagerFactory.createEntityManager();
-//		TypedQuery<Order> tq = entityManager.createNamedQuery("Order.findBySsn", Order.class);
-//		tq.setParameter("ssn", ssn);
-//		return tq.getResultList();
-//	}
-
 }

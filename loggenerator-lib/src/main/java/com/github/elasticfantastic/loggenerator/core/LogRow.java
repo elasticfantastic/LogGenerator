@@ -7,6 +7,11 @@ import java.util.Base64.Encoder;
 
 import com.github.elasticfantastic.loggenerator.core.utility.Base64Utility;
 
+/**
+ * Class which encapsulates a log row and it's contents.
+ * 
+ * @author Daniel Nilsson
+ */
 public class LogRow implements Comparable<LogRow> {
 
     private String id;

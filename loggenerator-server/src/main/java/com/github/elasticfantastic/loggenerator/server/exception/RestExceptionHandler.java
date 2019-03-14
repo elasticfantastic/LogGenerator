@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * Exception handler for controllers.
+ * 
+ * @author Daniel Nilsson
+ */
 @RestControllerAdvice
 public class RestExceptionHandler {
 
@@ -29,13 +34,12 @@ public class RestExceptionHandler {
 	@RequestMapping(produces = "text/plain")
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handleException(Throwable t) {
-		System.out.println("Handling");
 		String logFile = ParameterContainer.getParameter("logFile");
 
 		Map<String, Object> inputs = new HashMap<>();
 		inputs.put("id", ParameterContainer.getParameter("id"));
 		inputs.put("level", "ERROR");
-		inputs.put("message", t.getMessage());
+		inputs.put("text", t.getMessage());
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
 			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);

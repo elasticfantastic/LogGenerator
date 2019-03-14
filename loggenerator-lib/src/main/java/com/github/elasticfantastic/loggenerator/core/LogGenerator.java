@@ -16,6 +16,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.elasticfantastic.loggenerator.core.utility.ArrayUtility;
 
+/**
+ * Class for generating log rows, either with default values or supplied values
+ * 
+ * @author Daniel Nilsson
+ */
 public class LogGenerator {
 
     private Map<String, String[]> textsMappings;
@@ -26,7 +31,7 @@ public class LogGenerator {
     private ObjectMapper mapper;
 
     /**
-     * <p> Create a <code>LogGenerator</code> which generates logs for. </p>
+     * Default constructor. Creates an instance which can generate logs.
      */
     public LogGenerator() {
         this.textsMappings = new HashMap<>();
@@ -45,6 +50,14 @@ public class LogGenerator {
         this.mapper = new ObjectMapper();
     }
 
+    /**
+     * Set the frequency rate for a specified ID.
+     * 
+     * @param id
+     *            the ID
+     * @param frequency
+     *            the frequency in the range 0.00 to 1.00
+     */
     public void setIdFrequency(String id, double frequency) {
         int maxFrequency = (int) Math.rint(frequency * idFrequencies.length);
         int firstEmptyPos = getFirstEmptyPosition(idFrequencies);
@@ -53,6 +66,11 @@ public class LogGenerator {
         }
     }
 
+    /**
+     * Returns the frequency rates for all the ID's.
+     * 
+     * @return the frequency rates for ID's
+     */
     public Map<String, Double> getIdFrequencies() {
         Set<String> ids = new HashSet<>();
         for (String id : idFrequencies) {
@@ -61,6 +79,14 @@ public class LogGenerator {
         return getFrequencyMappings(ids, idFrequencies);
     }
 
+    /**
+     * Set the frequency rate for a specified level.
+     * 
+     * @param level
+     *            the level
+     * @param frequency
+     *            the frequency in the range 0.00 to 1.00
+     */
     public void setLevelFrequency(String level, double frequency) {
         int maxFrequency = (int) Math.rint(frequency * levelFrequencies.length);
         int firstEmptyPos = getFirstEmptyPosition(levelFrequencies);
@@ -69,6 +95,12 @@ public class LogGenerator {
         }
     }
 
+    /**
+     * 
+     * Returns the frequency rates for all the levels.
+     * 
+     * @return the frequency rates for levels
+     */
     public Map<String, Double> getLevelFrequencies() {
         Set<String> levels = new HashSet<>();
         for (String level : levelFrequencies) {
@@ -77,6 +109,16 @@ public class LogGenerator {
         return getFrequencyMappings(levels, levelFrequencies);
     }
 
+    /**
+     * Gets the frequency for a number of specified values (<code>keys</code> parameter).
+     * 
+     * @param keys
+     *            the keys
+     * @param frequencies
+     *            the frequencies (an array consisting of elements which also exists in
+     *            the <code>keys</code> parameter)
+     * @return the frequency mappings for all the specified <code>keys</code>
+     */
     private Map<String, Double> getFrequencyMappings(Set<String> keys, String[] frequencies) {
         Map<String, Double> mappings = new HashMap<>();
         for (String key : keys) {
@@ -113,6 +155,13 @@ public class LogGenerator {
         return getRandom(this.levelFrequencies);
     }
 
+    /**
+     * Returns a random level from the specified input by inspecting the frequency array.
+     * 
+     * @param levels
+     *            the levels to choose from
+     * @return a random level from the specified input
+     */
     public String getRandomLevel(String... levels) {
         int totalFrequency = 0;
         Map<String, Double> frequencies = getLevelFrequencies();
@@ -129,19 +178,66 @@ public class LogGenerator {
         return getRandom(arr);
     }
 
+    /**
+     * Returns a log row with random default values.
+     * 
+     * @return a log row with random default values
+     * @throws JsonProcessingException
+     *             if the log row couldn't process it's JSON contents
+     */
     public LogRow getLog() throws JsonProcessingException {
         return getLog(ZonedDateTime.now(), new HashMap<String, Object>());
     }
 
+    /**
+     * Returns a log row with the specified date and inputs.
+     * 
+     * @param specificDate
+     *            the date
+     * @param inputs
+     *            the inputs
+     * @return a log row with random values fetched from the specified inputs
+     * @throws JsonProcessingException
+     *             if the log row couldn't process it's JSON contents
+     */
     public LogRow getLog(ZonedDateTime specificDate, Map<String, Object> inputs) throws JsonProcessingException {
         return getLog(specificDate, specificDate, ZoneId.of("Europe/Stockholm"), inputs);
     }
 
+    /**
+     * Returns a log row with the specified date, zone ID and inputs.
+     * 
+     * @param specificDate
+     *            the date
+     * @param inputs
+     *            the inputs
+     * @param zoneId
+     *            the zone ID
+     * @return a log row with random values fetched from the specified inputs
+     * @throws JsonProcessingException
+     *             if the log row couldn't process it's JSON contents
+     */
     public LogRow getLog(ZonedDateTime specificDate, ZoneId zoneId, Map<String, Object> inputs)
             throws JsonProcessingException {
         return getLog(specificDate, specificDate, zoneId, inputs);
     }
 
+    /**
+     * Returns a log row with the specified beginning date, ending date, zone ID and
+     * inputs.
+     * 
+     * @param beginningDate
+     *            the beginning date
+     * @param endingDate
+     *            the ending date
+     * @param inputs
+     *            the inputs
+     * @param zoneId
+     *            the zone ID
+     * @return a log row with random values fetched from the specified inputs
+     * @throws JsonProcessingException
+     *             if the log row couldn't process it's JSON contents
+     */
     public LogRow getLog(ZonedDateTime beginningDate, ZonedDateTime endingDate, ZoneId zoneId,
             Map<String, Object> inputs) throws JsonProcessingException {
         Object id = inputs.getOrDefault("id", getRandom(this.idFrequencies));
@@ -153,6 +249,7 @@ public class LogGenerator {
 
         LogRow logRow = new LogRow(id.toString(), level.toString(), date, text.toString());
 
+        // Add some JSON if it's either a WARN or ERROR level
         if (level.equals("WARN") || level.equals("ERROR")) {
             UUID uuid = UUID.randomUUID();
 
@@ -167,10 +264,29 @@ public class LogGenerator {
         return logRow;
     }
 
+    /**
+     * Get a random element from the specified input.
+     * 
+     * @param arr
+     *            the array of elements
+     * @return a random element
+     */
     private static String getRandom(String[] arr) {
         return ArrayUtility.getRandom(arr);
     }
 
+    /**
+     * Returns a random <code>ZonedDateTime</code> between the beginning date (inclusive)
+     * and ending date (exclusive)
+     * 
+     * @param beginningDate
+     *            the beginning date
+     * @param endingDate
+     *            the ending date
+     * @param zoneId
+     *            the zone ID
+     * @return a random <code>ZonedDateTime</code>
+     */
     public static ZonedDateTime getRandom(ZonedDateTime beginningDate, ZonedDateTime endingDate, ZoneId zoneId) {
         if (beginningDate.equals(endingDate)) {
             return beginningDate;

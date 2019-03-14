@@ -10,96 +10,85 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+/**
+ * A class which encapsulates behavior for an order line. Pure JPA fluff to enable
+ * many-to-many association.
+ * 
+ * @author Daniel Nilsson
+ */
 @Entity
 @Table(name = "OrderLine")
 @IdClass(OrderLineId.class)
 public class OrderLine {
 
-	@Id
-	@Column(name = "orderNbr")
-	private int orderNbr;
+    @Id
+    @Column(name = "orderNbr")
+    private int orderNbr;
 
-	@Id
-	@Column(name = "productNbr")
-	private int productNbr;
+    @Id
+    @Column(name = "productNbr")
+    private int productNbr;
 
-	@Column(name = "quantity")
-	private int quantity;
+    @Column(name = "quantity")
+    private int quantity;
 
-	@JsonBackReference
-	@ManyToOne
-	@PrimaryKeyJoinColumn(name = "orderNbr", referencedColumnName = "orderNbr")
-	/*
-	 * if this JPA model doesn't create a table for the "PROJ_EMP" entity, please
-	 * comment out the @PrimaryKeyJoinColumn, and use the ff:
-	 * 
-	 * @JoinColumn(name = "employeeId", updatable = false, insertable = false)
-	 * or @JoinColumn(name = "employeeId", updatable = false, insertable = false,
-	 * referencedColumnName = "id")
-	 */
-	private Order order;
+    @JsonBackReference
+    @ManyToOne
+    @PrimaryKeyJoinColumn(name = "orderNbr", referencedColumnName = "orderNbr")
+    private Order order;
 
-	@JsonBackReference
-	@ManyToOne
-	@PrimaryKeyJoinColumn(name = "productNbr", referencedColumnName = "productNbr")
-	/*
-	 * the same goes here: if this JPA model doesn't create a table for the
-	 * "PROJ_EMP" entity, please comment out the @PrimaryKeyJoinColumn, and use the
-	 * ff:
-	 * 
-	 * @JoinColumn(name = "projectId", updatable = false, insertable = false)
-	 * or @JoinColumn(name = "projectId", updatable = false, insertable = false,
-	 * referencedColumnName = "id")
-	 */
-	private Product product;
+    @JsonBackReference
+    @ManyToOne
+    @PrimaryKeyJoinColumn(name = "productNbr", referencedColumnName = "productNbr")
+    private Product product;
 
-	public OrderLine() {
+    public OrderLine() {
 
-	}
+    }
 
-	public long getOrderNbr() {
-		return orderNbr;
-	}
+    public long getOrderNbr() {
+        return orderNbr;
+    }
 
-	public void setOrderNbr(int orderNbr) {
-		this.orderNbr = orderNbr;
-	}
+    public void setOrderNbr(int orderNbr) {
+        this.orderNbr = orderNbr;
+    }
 
-	public int getProductNbr() {
-		return productNbr;
-	}
+    public int getProductNbr() {
+        return productNbr;
+    }
 
-	public void setProductNbr(int productNbr) {
-		this.productNbr = productNbr;
-	}
+    public void setProductNbr(int productNbr) {
+        this.productNbr = productNbr;
+    }
 
-	public int getQuantity() {
-		return quantity;
-	}
+    public int getQuantity() {
+        return quantity;
+    }
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
-	public Order getOrder() {
-		return order;
-	}
+    public Order getOrder() {
+        return order;
+    }
 
-	public void setOrder(Order order) {
-		this.order = order;
-	}
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 
-	public Product getProduct() {
-		return product;
-	}
+    public Product getProduct() {
+        return product;
+    }
 
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
-	@Override
-	public String toString() {
-		return "OrderLine2 [orderNbr=" + orderNbr + ", productNbr=" + productNbr + ", quantity=" + quantity + "]";
-	}
+    @Override
+    public String toString() {
+        return "OrderLine2 [orderNbr=" + orderNbr + ", productNbr=" + productNbr + ", quantity=" + quantity + "]";
+    }
 
 }
