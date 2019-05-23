@@ -3,6 +3,11 @@ package com.github.elasticfantastic.loggenerator.core.utility;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Singleton class which holds parameters and their respective values.
+ * 
+ * @author Daniel Nilsson
+ */
 public class ParameterContainer {
 
 	private static Map<String, String> parameters;

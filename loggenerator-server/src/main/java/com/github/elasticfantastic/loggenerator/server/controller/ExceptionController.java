@@ -7,12 +7,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Dummy controller which throws exception when called.
+ * 
+ * @author Daniel Nilsson
+ */
 @RestController
 public class ExceptionController {
 
-	@RequestMapping(value = "/exception", method = RequestMethod.GET)
-	public ResponseEntity<Object> exception(HttpServletRequest request) throws Exception {
-		throw new Exception("ExceptionController with mapping /exception threw an exception, just as expected");
-	}
+    @RequestMapping(value = "/exception", method = RequestMethod.GET)
+    public ResponseEntity<Object> exception(HttpServletRequest request) throws Exception {
+        throw new Exception("ExceptionController with mapping /exception threw an exception, just as expected");
+    }
 
 }

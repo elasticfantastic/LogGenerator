@@ -22,6 +22,12 @@ import com.github.elasticfantastic.loggenerator.core.utility.ParameterContainer;
 import com.github.elasticfantastic.loggenerator.core.utility.http.HttpUtility;
 import com.github.elasticfantastic.loggenerator.core.utility.json.JsonUtility;
 
+/**
+ * An order controller. Is used for placing orders in the database and operations related
+ * to that.
+ * 
+ * @author Daniel Nilsson
+ */
 @RestController
 public class OrderController {
 

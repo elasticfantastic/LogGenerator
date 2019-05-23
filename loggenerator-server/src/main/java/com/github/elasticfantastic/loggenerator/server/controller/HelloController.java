@@ -19,49 +19,54 @@ import com.github.elasticfantastic.loggenerator.core.LogRow;
 import com.github.elasticfantastic.loggenerator.core.utility.ParameterContainer;
 import com.github.elasticfantastic.loggenerator.core.utility.http.HttpUtility;
 
+/**
+ * A simple hello world controller. Used for communicating between the client and server.
+ * 
+ * @author Daniel Nilsson
+ */
 @RestController
 public class HelloController {
 
-	private LogGenerator generator;
+    private LogGenerator generator;
 
-	public HelloController() {
-		this.generator = new LogGenerator();
+    public HelloController() {
+        this.generator = new LogGenerator();
 
-		this.generator.setLevelFrequency("ERROR", 0.01);
-		this.generator.setLevelFrequency("WARN", 0.10);
-		this.generator.setLevelFrequency("INFO", 0.34);
-		this.generator.setLevelFrequency("DEBUG", 0.55);
-	}
+        this.generator.setLevelFrequency("ERROR", 0.01);
+        this.generator.setLevelFrequency("WARN", 0.10);
+        this.generator.setLevelFrequency("INFO", 0.34);
+        this.generator.setLevelFrequency("DEBUG", 0.55);
+    }
 
-	@RequestMapping(value = "/hello", method = RequestMethod.GET)
-	public ResponseEntity<Object> order(HttpServletRequest request) throws IOException {
-		String logFile = ParameterContainer.getParameter("logFile");
-		String id = ParameterContainer.getParameter("id");
+    @RequestMapping(value = "/hello", method = RequestMethod.GET)
+    public ResponseEntity<Object> order(HttpServletRequest request) throws IOException {
+        String logFile = ParameterContainer.getParameter("logFile");
+        String id = ParameterContainer.getParameter("id");
 
-		// Generate request output
-		String level = "INFO";
-		
+        // Generate request output
+        String level = "INFO";
+
         String remoteAddress = request.getRemoteAddr();
         int remotePort = request.getRemotePort();
         String text = String.format("Received request from %s:%d", remoteAddress, remotePort);
-		
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), text);
-			System.out.println(logRow);
-			bw.write(logRow + System.getProperty("line.separator"));
-		}
 
-		// Generate response output
-		Map<String, Object> inputs = new HashMap<>();
-		inputs.put("id", id);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+            LogRow logRow = new LogRow(id, level, ZonedDateTime.now(), text);
+            System.out.println(logRow);
+            bw.write(logRow + System.getProperty("line.separator"));
+        }
 
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
-			LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
-			System.out.println(logRow);
-			bw.write(logRow + System.getProperty("line.separator"));
+        // Generate response output
+        Map<String, Object> inputs = new HashMap<>();
+        inputs.put("id", id);
 
-			return new ResponseEntity<>(logRow.getText(), HttpUtility.toStatus(logRow.getLevel()));
-		}
-	}
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(logFile, true))) {
+            LogRow logRow = this.generator.getLog(ZonedDateTime.now(), inputs);
+            System.out.println(logRow);
+            bw.write(logRow + System.getProperty("line.separator"));
+
+            return new ResponseEntity<>(logRow.getText(), HttpUtility.toStatus(logRow.getLevel()));
+        }
+    }
 
 }

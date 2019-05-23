@@ -11,11 +11,11 @@ import com.github.elasticfantastic.loggenerator.core.LogGenerator;
 import com.github.elasticfantastic.loggenerator.core.LogRow;
 import com.github.elasticfantastic.loggenerator.core.utility.ParameterContainer;
 
-public class ThreadTest implements Runnable {
+public class BackgroundJob implements Runnable {
 
 	private LogGenerator generator;
 
-	public ThreadTest(LogGenerator generator) {
+	public BackgroundJob(LogGenerator generator) {
 		this.generator = generator;
 	}
 

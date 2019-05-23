@@ -6,10 +6,19 @@ import com.github.elasticfantastic.loggenerator.core.database.model.Order;
 
 public interface IOrderService {
 
-	void add(Order order);
+    /**
+     * Add an order.
+     * 
+     * @param order
+     *            the order to add
+     */
+    void add(Order order);
 
-	Collection<Order> findAll();
-
-	// Collection<Order> findBySsn(String ssn);
+    /**
+     * Fetch all the orders.
+     * 
+     * @return all the orders
+     */
+    Collection<Order> findAll();
 
 }

@@ -11,51 +11,49 @@ import javax.persistence.TypedQuery;
 import com.github.elasticfantastic.loggenerator.core.database.model.Customer;
 import com.github.elasticfantastic.loggenerator.core.database.model.Order;
 
+/**
+ * Database manipulation methods for customers.
+ * 
+ * @author Daniel Nilsson
+ */
 public class CustomerService implements ICustomerService {
 
-	private EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
-	public CustomerService() {
-		this.entityManagerFactory = Persistence.createEntityManagerFactory("ElasticFantasticDS");
-	}
+    public CustomerService() {
+        this.entityManagerFactory = Persistence.createEntityManagerFactory("ElasticFantasticDS");
+    }
 
-	@Override
-	public Customer findById(String ssn) {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		return entityManager.find(Customer.class, ssn);
-	}
+    @Override
+    public Customer findById(String ssn) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        return entityManager.find(Customer.class, ssn);
+    }
 
-	@Override
-	public Collection<Customer> findAll() {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		TypedQuery<Customer> tq = entityManager.createNamedQuery("Customer.findAll", Customer.class);
-		return tq.getResultList();
-	}
+    @Override
+    public Collection<Customer> findAll() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        TypedQuery<Customer> tq = entityManager.createNamedQuery("Customer.findAll", Customer.class);
+        return tq.getResultList();
+    }
 
-	@Override
-	public Collection<String> findAllSsns() {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		TypedQuery<String> tq = entityManager.createNamedQuery("Customer.findAllSsns", String.class);
-		return tq.getResultList();
-	}
+    @Override
+    public Customer update(Customer customer) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-	@Override
-	public Customer update(Customer customer) {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
 
-		EntityTransaction transaction = entityManager.getTransaction();
-		transaction.begin();
+        for (Order order : customer.getOrders()) {
+            if (order.getNbr() < 0) {
+                entityManager.persist(order);
+            }
+        }
 
-		for (Order order : customer.getOrders()) {
-			if (order.getNbr() < 0) {
-				entityManager.persist(order);
-			}
-		}
+        entityManager.merge(customer);
+        transaction.commit();
 
-		entityManager.merge(customer);
-		transaction.commit();
-
-		return customer;
-	}
+        return customer;
+    }
 
 }
